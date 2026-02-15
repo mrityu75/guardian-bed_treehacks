@@ -6,7 +6,7 @@ import requests
 from openai import OpenAI
 
 # Configuration
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "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")
 API_ENDPOINT = "http://172.30.202.252:8000/api/transcript"
 AUDIO_DEVICE = "plughw:2,0"
 CHUNK_DURATION = 5
