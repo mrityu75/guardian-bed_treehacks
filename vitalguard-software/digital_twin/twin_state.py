@@ -267,6 +267,7 @@ class DigitalTwin:
             # Sparkline data (last N readings)
             "history": {
                 "heart_rate": [round(v, 1) for v in self.hr_history[-60:]],
+                "body_temp": [round(v, 2) for v in self.temp_history[-60:]],
                 "spo2": [round(v, 1) for v in self.spo2_history[-60:]],
                 "risk_score": [round(v, 1) for v in self.risk_history[-60:]],
             },
@@ -284,5 +285,11 @@ class DigitalTwin:
                 "medications": getattr(self.patient, 'medications', []),
                 "lab_results": getattr(self.patient, 'lab_results', []),
                 "surgical_history": getattr(self.patient, 'surgical_history', []),
+                "has_cardiovascular_risk": getattr(self.patient, 'has_cardiovascular_risk', False),
             },
+
+            # Voice & Fall risk (populated by server from hw_adapter)
+            "voice_summary": getattr(self, '_voice_summary', ''),
+            "fall_risk": getattr(self, '_fall_risk', {"score": 0, "level": "low", "indicators": []}),
+            "_voiceLog": getattr(self, '_voice_log', []),
         }

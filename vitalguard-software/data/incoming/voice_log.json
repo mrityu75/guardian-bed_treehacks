@@ -1,0 +1,92 @@
+[
+  {
+    "frame": 0,
+    "text": "I'm feeling okay, just a little tired.",
+    "time": "0.0m"
+  },
+  {
+    "frame": 5,
+    "text": "Can I get some water please?",
+    "time": "0.2m"
+  },
+  {
+    "frame": 10,
+    "text": "The bed is comfortable enough.",
+    "time": "0.3m"
+  },
+  {
+    "frame": 15,
+    "text": "My family is coming to visit later today.",
+    "time": "0.5m"
+  },
+  {
+    "frame": 20,
+    "text": "What time is dinner?",
+    "time": "0.7m"
+  },
+  {
+    "frame": 25,
+    "text": "I slept pretty well last night.",
+    "time": "0.8m"
+  },
+  {
+    "frame": 30,
+    "text": "The nurse was very helpful this morning.",
+    "time": "1.0m"
+  },
+  {
+    "frame": 35,
+    "text": "I'm watching the news right now.",
+    "time": "1.2m"
+  },
+  {
+    "frame": 40,
+    "text": "My back is really hurting right now.",
+    "time": "1.3m"
+  },
+  {
+    "frame": 45,
+    "text": "The pain is getting worse, can someone help?",
+    "time": "1.5m"
+  },
+  {
+    "frame": 50,
+    "text": "I can't get comfortable in this position.",
+    "time": "1.7m"
+  },
+  {
+    "frame": 55,
+    "text": "It hurts when I try to move.",
+    "time": "1.8m"
+  },
+  {
+    "frame": 60,
+    "text": "I need pain medication, it's really bad.",
+    "time": "2.0m"
+  },
+  {
+    "frame": 65,
+    "text": "Something doesn't feel right at all.",
+    "time": "2.2m"
+  },
+  {
+    "frame": 70,
+    "text": "I need a doctor right now!",
+    "time": "2.3m"
+  },
+  {
+    "frame": 75,
+    "text": "Help! I think I'm falling off the bed!",
+    "time": "2.5m"
+  },
+  {
+    "frame": 80,
+    "text": "I feel dizzy, something is wrong.",
+    "time": "2.7m"
+  },
+  {
+    "frame": 85,
+    "text": "I can't breathe properly, help!",
+    "time": "2.8m"
+  }
+]

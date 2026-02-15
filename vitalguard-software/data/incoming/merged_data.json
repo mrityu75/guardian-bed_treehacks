@@ -1,0 +1,91 @@
+{
+  "last_update": 1771166113.680583,
+  "bed_esp1": {
+    "module": "bed_esp1",
+    "pressures": {
+      "head_left": 12,
+      "head_center": 47,
+      "head_right": 21,
+      "upper_back_left_shoulder": 117,
+      "upper_back_right_shoulder": 122,
+      "lower_back_left_hip": 414
+    },
+    "temperatures": {
+      "temp_1": 21.8426,
+      "temp_2": 22.3879,
+      "temp_3": 21.9003
+    },
+    "mpu1": {
+      "accel_x": 0.176209,
+      "accel_y": -0.730484,
+      "accel_z": 9.576952,
+      "gyro_x": -6.737,
+      "gyro_y": 4.215,
+      "gyro_z": -1.177
+    },
+    "mpu2": {
+      "accel_x": 0.35712,
+      "accel_y": -0.75524,
+      "accel_z": 9.908163,
+      "gyro_x": 0.006905,
+      "gyro_y": 0.021438,
+      "gyro_z": -0.021421
+    },
+    "timestamp_unified": 1771166113.680583,
+    "timestamp_esp": 6113680
+  },
+  "bed_esp2": {
+    "module": "bed_esp2",
+    "pressures": {
+      "lower_back_right_hip": 379,
+      "upper_leg_left_thigh": 126,
+      "upper_leg_right_thigh": 116,
+      "lower_leg_left_calf": 9,
+      "lower_leg_right_calf": 52,
+      "lower_back_center_spine": 147
+    },
+    "timestamp_unified": 1771166113.680583,
+    "timestamp_esp": 6113680
+  },
+  "hand": {
+    "module": "hand",
+    "temperature": {
+      "raw": 36.6557,
+      "corrected": 36.1765,
+      "status": "ok"
+    },
+    "movement": {
+      "accel_x": 6.151,
+      "accel_y": 10.924,
+      "accel_z": 18.933,
+      "gyro_x": -0.019358,
+      "gyro_y": -0.063955,
+      "gyro_z": -0.045599
+    },
+    "heart_rate": {
+      "ir": 71919,
+      "red": 61432,
+      "hand_detected": true,
+      "computed_hr": 125.6,
+      "computed_spo2": 90.7
+    },
+    "timestamp_unified": 1771166113.680583,
+    "timestamp_esp": 6113680
+  },
+  "voice_latest": {
+    "id": 0,
+    "source": "voice",
+    "text": "",
+    "timestamp": 1771166113.680583,
+    "timestamp_unified": 1771166113.680583
+  },
+  "last_update_readable": "2026-02-15T23:35:13",
+  "radar": {
+    "distance_cm": 41,
+    "moving": true,
+    "presence": 100,
+    "stationary": true,
+    "timestamp": 1771166113.680583,
+    "timestamp_unified": 1771166113.680583
+  }
+}

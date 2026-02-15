@@ -159,7 +159,28 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);min-he
 <div class="stc"><div class="stI a"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg></div><div><div class="stV" id="sCaution">—</div><div class="stL">Caution</div></div></div>
 <div class="stc"><div class="stI r"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/></svg></div><div><div class="stV" id="sCritical">—</div><div class="stL">Critical</div></div></div>
 </div>
-<div class="secT">Patient Overview</div><div class="pgrid" id="grid"></div></div></div>
+<div class="secT">Patient Overview</div>
+<div style="display:grid;grid-template-columns:1fr 280px;gap:16px">
+<div class="pgrid" id="grid"></div>
+<!-- Fall Risk Panel -->
+<div id="fallPanel" style="position:sticky;top:20px;height:fit-content">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3)">Fall Risk Monitor</span>
+    </div>
+    <div style="font-size:10px;color:var(--t4);margin-bottom:12px;line-height:1.5;border-bottom:1px solid var(--border);padding-bottom:10px">
+      Monitors radar proximity, bed tilt, and hand impact sensors to detect fall risk in real-time.
+    </div>
+    <div id="fallCards"></div>
+    <div id="fallEmpty" style="color:var(--t4);font-size:11px;text-align:center;padding:20px 0">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--t4)" stroke-width="1.5" style="margin-bottom:6px"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      <div>No fall risk patients detected</div>
+    </div>
+  </div>
+</div>
+</div>
+</div></div>
 
 <!-- DETAIL -->
 <div class="ov" id="ov"><div class="det">
@@ -192,6 +213,32 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);min-he
     <div style="font-size:9px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;margin-top:4px">Lab Results</div>
     <div id="labList" style="font-size:11px;color:var(--t2);line-height:1.8"></div>
   </div>
+</div>
+
+<!-- Voice Summary (AI Agent) -->
+<div id="voiceSummaryCard" style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;margin-bottom:14px;display:none">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+    <span style="font-size:9px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:1.5px">Voice Monitoring Summary</span>
+    <span style="font-size:8px;color:var(--acc);background:rgba(74,125,255,.1);padding:2px 6px;border-radius:8px;margin-left:auto">AI Agent</span>
+  </div>
+  <div id="voiceSummaryText" style="font-size:12px;color:var(--t2);line-height:1.7"></div>
+</div>
+
+<!-- Recent Voice Transcripts -->
+<div id="voiceLogCard" style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;margin-bottom:14px;display:none">
+  <div style="font-size:9px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px">Recent Patient Speech</div>
+  <div id="voiceLogList" style="max-height:120px;overflow-y:auto;font-size:11px"></div>
+</div>
+
+<!-- Fall Risk Alert (if active) -->
+<div id="fallRiskAlert" style="background:rgba(240,80,80,.06);border:1px solid rgba(240,80,80,.2);border-radius:var(--r);padding:14px 18px;margin-bottom:14px;display:none">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <span style="font-size:10px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:1px">Fall Risk Alert</span>
+    <span id="fallRiskScore" style="font-size:10px;color:var(--red);margin-left:auto;font-weight:700"></span>
+  </div>
+  <div id="fallRiskIndicators" style="font-size:11px;color:var(--t2)"></div>
 </div>
 
 <!-- AI Clinical Report -->
@@ -284,6 +331,9 @@ function patientFromTwin(d) {
     labs: (d.profile && d.profile.lab_results) || [],
     allergies: (d.profile && d.profile.allergies) || [],
     surgHist: (d.profile && d.profile.surgical_history) || [],
+    voiceSummary: d.voice_summary || '',
+    fallRisk: d.fall_risk || {score:0,level:'low',indicators:[]},
+    voiceLog: d._voiceLog || [],
     _raw: d
   };
 }
@@ -407,8 +457,8 @@ function loadFallbackData() {
   ];
 
   P = [
-    {id:'PID-2406',nm:'William Park',ini:'WP',rm:'ICU-211',sg:'Craniotomy',dy:4,st:'critical',hr:104,tp:38.4,sp:92,hv:18,bp:'148/96',rr:24,risk:78,riskLevel:'critical',stress:0.8,posture:{current:'supine',duration_min:95,reposition_status:'overdue',remaining_min:0},alerts:['Tachycardia with hypoxemia','Repositioning overdue','HR rising while SpO2 falling'],alertCount:3,history:{},pressureZones:{},profile:{age:68,bmi:26.2,is_elderly:true,is_diabetic:false},movement:0.08,consciousness:'reduced',nurse:'Nurse Kim',doctor:'Dr. Han',meds:['Morphine 2mg IV q4h PRN','Cefazolin 1g IV q8h','Enoxaparin 40mg SC daily','Metoprolol 25mg PO BID','Ondansetron 4mg IV PRN'],labs:critLabs,allergies:['Penicillin (rash)'],surgHist:['Appendectomy (2018)','Cataract surgery (2022)']},
-    {id:'PID-2402',nm:'James Sullivan',ini:'JS',rm:'ICU-206',sg:'Hip Replacement',dy:1,st:'caution',hr:91,tp:37.9,sp:95,hv:28,bp:'134/88',rr:20,risk:52,riskLevel:'caution',stress:0.45,posture:{current:'supine',duration_min:55,reposition_status:'warning',remaining_min:35},alerts:['Temp trending up'],alertCount:1,history:{},pressureZones:{},profile:{age:72,bmi:28.1,is_elderly:true,is_diabetic:true},movement:0.2,consciousness:'responsive',nurse:'Nurse Park',doctor:'Dr. Yoon',meds:['Morphine 2mg IV q4h PRN','Cefazolin 1g IV q8h','Insulin glargine 20u SC QHS','Metformin 500mg PO BID'],labs:demoLabs.concat([{test:'CRP',time:'-6h',value:'5.2',unit:'mg/L',status:'mildly elevated'}]),allergies:['NKDA'],surgHist:['Hernia repair (2015)']},
+    {id:'PID-2406',nm:'William Park',ini:'WP',rm:'ICU-211',sg:'Craniotomy',dy:4,st:'critical',hr:104,tp:38.4,sp:92,hv:18,bp:'148/96',rr:24,risk:78,riskLevel:'critical',stress:0.8,posture:{current:'supine',duration_min:95,reposition_status:'overdue',remaining_min:0},alerts:['Tachycardia with hypoxemia','Repositioning overdue','HR rising while SpO2 falling'],alertCount:3,history:{},pressureZones:{},profile:{age:68,bmi:26.2,is_elderly:true,is_diabetic:false,has_cardiovascular_risk:true},movement:0.08,consciousness:'reduced',nurse:'Nurse Kim',doctor:'Dr. Han',meds:['Morphine 2mg IV q4h PRN','Cefazolin 1g IV q8h','Enoxaparin 40mg SC daily','Metoprolol 25mg PO BID','Ondansetron 4mg IV PRN'],labs:critLabs,allergies:['Penicillin (rash)'],surgHist:['Appendectomy (2018)','Cataract surgery (2022)'],voiceSummary:'Patient expressed distress in 3 instances — requires immediate attention. Pain complaints noted in 2 instances — review analgesic protocol. Patient made 1 care request.',fallRisk:{score:0.7,level:'critical',indicators:['patient_moving','near_bed_edge','bed_tilt_detected']},voiceLog:[{text:'My back is really hurting right now.',time:'1.2m'},{text:'The pain is getting worse, can someone help?',time:'1.8m'},{text:'I feel dizzy, something is wrong.',time:'2.4m'},{text:'I think I\'m going to fall, help me!',time:'2.8m'},{text:'I need a doctor right now!',time:'3.0m'}]},
+    {id:'PID-2402',nm:'James Sullivan',ini:'JS',rm:'ICU-206',sg:'Hip Replacement',dy:1,st:'caution',hr:91,tp:37.9,sp:95,hv:28,bp:'134/88',rr:20,risk:52,riskLevel:'caution',stress:0.45,posture:{current:'supine',duration_min:55,reposition_status:'warning',remaining_min:35},alerts:['Temp trending up'],alertCount:1,history:{},pressureZones:{},profile:{age:72,bmi:28.1,is_elderly:true,is_diabetic:true,has_cardiovascular_risk:false},movement:0.2,consciousness:'responsive',nurse:'Nurse Park',doctor:'Dr. Yoon',meds:['Morphine 2mg IV q4h PRN','Cefazolin 1g IV q8h','Insulin glargine 20u SC QHS','Metformin 500mg PO BID'],labs:demoLabs.concat([{test:'CRP',time:'-6h',value:'5.2',unit:'mg/L',status:'mildly elevated'}]),allergies:['NKDA'],surgHist:['Hernia repair (2015)'],voiceSummary:'Patient reported moderate pain and requested repositioning. No distress indicators detected.',fallRisk:{score:0.1,level:'low',indicators:[]},voiceLog:[{text:'Can I get some water please?',time:'0.5m'},{text:'The pressure on my hip is uncomfortable.',time:'1.2m'},{text:'Can you reposition me? This is painful.',time:'2.0m'}]},
     {id:'PID-2415',nm:'Grace Wilson',ini:'GW',rm:'ICU-215',sg:'Nephrectomy',dy:3,st:'caution',hr:86,tp:37.6,sp:96,hv:29,bp:'132/86',rr:18,risk:45,riskLevel:'caution',stress:0.35,posture:{current:'left_lateral',duration_min:40,reposition_status:'warning',remaining_min:50},alerts:[],alertCount:0,history:{},pressureZones:{},profile:{age:64,bmi:27.4,is_elderly:false,is_diabetic:false},movement:0.25,consciousness:'responsive',nurse:'Nurse Lee',doctor:'Dr. Shin',meds:['Ketorolac 15mg IV q6h','Cefazolin 1g IV q8h','Famotidine 20mg IV q12h'],labs:demoLabs,allergies:['Sulfa drugs (hives)'],surgHist:['Cholecystectomy (2020)']},
     {id:'PID-2408',nm:'David Kim',ini:'DK',rm:'ICU-207',sg:'Lumbar Disc',dy:2,st:'caution',hr:88,tp:37.5,sp:96,hv:30,bp:'130/84',rr:19,risk:42,riskLevel:'caution',stress:0.3,posture:{current:'right_lateral',duration_min:30,reposition_status:'ok',remaining_min:60},alerts:[],alertCount:0,history:{},pressureZones:{},profile:{age:55,bmi:24.8,is_elderly:false,is_diabetic:false},movement:0.3,consciousness:'responsive',nurse:'Nurse Choi',doctor:'Dr. Kwon',meds:demoMeds.slice(0,4),labs:demoLabs,allergies:['NKDA'],surgHist:[]},
     {id:'PID-2401',nm:'Eleanor Mitchell',ini:'EM',rm:'ICU-204',sg:'Spinal Fusion',dy:2,st:'stable',hr:72,tp:36.8,sp:98,hv:42,bp:'118/76',rr:16,risk:18,riskLevel:'info',stress:0.12,posture:{current:'supine',duration_min:20,reposition_status:'ok',remaining_min:70},alerts:[],alertCount:0,history:{},pressureZones:{},profile:{age:52,bmi:23.5,is_elderly:false,is_diabetic:false},movement:0.4,consciousness:'responsive',nurse:'Nurse Jung',doctor:'Dr. Seo',meds:demoMeds.slice(0,3),labs:demoLabs,allergies:['NKDA'],surgHist:['Tonsillectomy (childhood)']},
@@ -466,6 +516,32 @@ function render(f){
     return '<div class="pc" data-id="'+p.id+'" style="'+expStyle+'"><div class="pcT"><div class="av">'+p.ini+'</div><div class="sd '+p.st+'"></div></div><div class="pcN">'+p.nm+expLabel+'</div><div class="pcI">'+p.id+' &middot; Risk: <strong style="color:'+(p.risk>55?'var(--red)':p.risk>20?'var(--amb)':'var(--grn)')+'">'+Math.round(p.risk)+'</strong></div><div class="pcV"><div><div class="pvL">HR</div><div class="pvV '+vc(p.hr,60,90)+'">'+p.hr+'</div></div><div><div class="pvL">Temp</div><div class="pvV '+vc(p.tp,36,37.5)+'">'+p.tp+'\u00B0</div></div><div><div class="pvL">SpO2</div><div class="pvV '+vc(p.sp,95,100)+'">'+p.sp+'%</div></div><div><div class="pvL">RR</div><div class="pvV '+vc(p.rr,12,20)+'">'+p.rr+'</div></div></div><div class="pcB"><span>'+p.rm+'</span><span style="color:var(--acc)">'+p.doctor+'</span><span style="color:'+posColor+';font-weight:500">'+posName.replace('_',' ')+' '+posDur+'m</span></div></div>';
   }).join('');
   grid.querySelectorAll('.pc').forEach(function(c){c.onclick=function(){openD(c.dataset.id)}});
+
+  // Update Fall Risk Sidebar
+  var fallCards=document.getElementById('fallCards');
+  var fallEmpty=document.getElementById('fallEmpty');
+  var fallPatients=P.filter(function(p){return p.fallRisk&&p.fallRisk.score>0.2});
+  if(fallPatients.length>0){
+    fallEmpty.style.display='none';
+    fallCards.innerHTML=fallPatients.sort(function(a,b){return b.fallRisk.score-a.fallRisk.score}).map(function(p){
+      var fr=p.fallRisk;
+      var lvlColor=fr.level==='critical'?'var(--red)':fr.level==='warning'?'var(--amb)':'var(--t3)';
+      return '<div style="padding:10px;margin-bottom:6px;background:rgba(240,80,80,.04);border:1px solid rgba(240,80,80,.12);border-radius:8px;cursor:pointer" onclick="openD(\''+p.id+'\')">'+
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'+
+          '<span style="font-weight:600;font-size:12px;color:var(--t1)">'+p.nm+'</span>'+
+          '<span style="font-size:10px;font-weight:700;color:'+lvlColor+';text-transform:uppercase">'+fr.level+'</span>'+
+        '</div>'+
+        '<div style="font-size:10px;color:var(--t3)">'+p.rm+' &middot; Score: '+Math.round(fr.score*100)+'%</div>'+
+        '<div style="margin-top:4px">'+(fr.indicators||[]).map(function(ind){
+          return '<span style="display:inline-block;padding:1px 6px;margin:1px 2px;background:rgba(240,80,80,.08);border-radius:6px;font-size:9px;color:var(--red)">'+ind.replace(/_/g,' ')+'</span>';
+        }).join('')+'</div></div>';
+    }).join('');
+  } else {
+    fallEmpty.style.display='block';
+    fallCards.innerHTML='';
+  }
+
+  // Update Voice Activity Feed — removed from sidebar (shown only in detail panel)
 }
 document.getElementById('sb').oninput=function(e){render(e.target.value)};
 
@@ -688,6 +764,48 @@ function updateDetailPanel(p) {
       return '<div style="text-align:center;padding:6px 2px;border-radius:6px;background:'+bg+';font-size:9px;color:#fff;font-weight:500;min-height:28px;display:flex;align-items:center;justify-content:center;flex-direction:column"><span>'+zoneLabels[i]+'</span><span style="font-size:10px;font-weight:700">'+Math.round(score*100)+'</span></div>';
     }).join('');
   }
+
+  // Voice Summary (AI Agent)
+  var vsCard=document.getElementById('voiceSummaryCard');
+  var vsText=document.getElementById('voiceSummaryText');
+  var vSummary=p.voiceSummary||'';
+  if(vSummary){
+    vsCard.style.display='block';
+    vsText.innerHTML=vSummary;
+  } else {
+    vsCard.style.display='none';
+  }
+
+  // Voice Log (recent transcripts)
+  var vlCard=document.getElementById('voiceLogCard');
+  var vlList=document.getElementById('voiceLogList');
+  var vLog=p.voiceLog||[];
+  if(vLog.length>0){
+    vlCard.style.display='block';
+    vlList.innerHTML=vLog.slice(-8).reverse().map(function(v){
+      var isPain=v.text&&(/pain|hurt|can't|help|dizzy|fall|breath/i).test(v.text);
+      var dotColor=isPain?'var(--red)':'var(--grn)';
+      return '<div style="padding:5px 0;border-bottom:1px solid rgba(255,255,255,.03);display:flex;gap:8px;align-items:flex-start">'+
+        '<div style="width:6px;height:6px;border-radius:50%;background:'+dotColor+';margin-top:5px;flex-shrink:0"></div>'+
+        '<div><span style="color:var(--t4);font-size:9px">'+(v.time||'')+'</span> '+
+        '<span style="color:'+(isPain?'var(--amb)':'var(--t2)')+'">'+v.text+'</span></div></div>';
+    }).join('');
+  } else {
+    vlCard.style.display='none';
+  }
+
+  // Fall Risk Alert
+  var frAlert=document.getElementById('fallRiskAlert');
+  var fr=p.fallRisk||{score:0,level:'low',indicators:[]};
+  if(fr.score>0.2){
+    frAlert.style.display='block';
+    document.getElementById('fallRiskScore').textContent=Math.round(fr.score*100)+'%';
+    document.getElementById('fallRiskIndicators').innerHTML=(fr.indicators||[]).map(function(ind){
+      return '<span style="display:inline-block;padding:2px 8px;margin:2px 3px;background:rgba(240,80,80,.1);border-radius:8px;font-size:10px;color:var(--red)">'+ind.replace(/_/g,' ')+'</span>';
+    }).join('');
+  } else {
+    frAlert.style.display='none';
+  }
 }
 
 // =============================================
@@ -726,6 +844,12 @@ function genRpt(p){
     '<div style="flex:1;min-width:140px"><div class="pvL">BMI</div><div style="color:var(--t1);font-weight:600;margin-top:2px">'+(prof.bmi||'—')+'</div></div>'+
     '<div style="flex:1;min-width:140px"><div class="pvL">Allergies</div><div style="color:'+(p.allergies[0]==='NKDA'?'var(--t3)':'var(--red)')+';font-weight:600;margin-top:2px">'+(p.allergies[0]||'NKDA')+'</div></div>'+
     '</div>';
+
+  // Voice Summary in report
+  var voiceRpt='';
+  if(p.voiceSummary){
+    voiceRpt='<div class="rS"><h4>Voice Monitoring <span style="font-size:9px;color:var(--acc);font-weight:400;background:rgba(74,125,255,.08);padding:2px 6px;border-radius:6px;margin-left:6px">AI Agent</span></h4><p>'+p.voiceSummary+'</p></div>';
+  }
 
   // Medications section
   var medsHtml='';
@@ -768,7 +892,8 @@ function genRpt(p){
     '<p>'+sum+'</p>'+
     '<div class="rS"><h4>Vital Signs Analysis</h4><p>'+vit+'</p></div>'+
     '<div class="rS"><h4>Pressure & Position</h4><p>'+pres+'</p></div>'+
-    '<div class="rS"><h4>Movement & Activity</h4><p>'+mov+'</p></div></div>';
+    '<div class="rS"><h4>Movement & Activity</h4><p>'+mov+'</p></div>'+
+    voiceRpt+'</div>';
 }
 
 function genLog(p){

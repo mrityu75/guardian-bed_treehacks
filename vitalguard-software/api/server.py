@@ -38,6 +38,8 @@ from analysis.pressure import compute_zone_scores
 from digital_twin.twin_state import DigitalTwin
 from alerts.alert_manager import AlertManager
 from alerts.email_notifier import EmailNotifier
+from data.hw_adapter import convert_hardware_frame
+from data.voice_agent import VoiceSummaryAgent
 from reporting.groq_report import generate_report
 from security.quantum_crypto import SecureChannel
 
@@ -374,6 +376,11 @@ async def run_simulation(scenario_key="ALL", experiment=None, speed=1.0, duratio
 
             bd["patients"][pid] = ds
 
+        # In hybrid mode, also include file-watch patients
+        for hw_pid, hw_twin in sim_state["twins"].items():
+            if hw_pid not in bd["patients"]:
+                bd["patients"][hw_pid] = hw_twin.to_dashboard_state()
+
         if ws_manager.client_count > 0:
             await ws_manager.broadcast(bd)
         await asyncio.sleep(interval)
@@ -403,11 +410,14 @@ async def run_file_watch(speed=1.0):
     email_notifier = EmailNotifier()
     alert_manager = AlertManager(notifiers=[email_notifier])
     sim_state["alert_manager"] = alert_manager
+    voice_agent = VoiceSummaryAgent()
+    voice_entries = []  # Accumulate voice transcripts
 
     interval = 0.5 / speed
     file_mtimes = {}
     patient_cache = {}  # pid -> PatientProfile
     frame_count = 0
+    last_voice_id = -1
 
     print(f"[WATCH] Monitoring: {os.path.abspath(data_dir)}")
     print(f"[WATCH] Poll interval: {interval:.2f}s")
@@ -422,8 +432,10 @@ async def run_file_watch(speed=1.0):
         except Exception:
             all_files = []
 
-        # Find data files (not profiles)
-        data_files = [f for f in all_files if f.endswith(".json") and not f.endswith("_profile.json")]
+        # Find data files (not profiles, not voice logs)
+        data_files = [f for f in all_files if f.endswith(".json")
+                      and not f.endswith("_profile.json")
+                      and f != "voice_log.json"]
 
         for fname in data_files:
             fpath = os.path.join(data_dir, fname)
@@ -437,7 +449,30 @@ async def run_file_watch(speed=1.0):
                     file_mtimes[pid] = mtime
 
                     with open(fpath, "r") as f:
-                        frame = json.load(f)
+                        raw_data = json.load(f)
+
+                    # Detect format: merged_data.json (hardware) vs VitalGuard frame
+                    is_hw_format = "bed_esp1" in raw_data or "bed_esp2" in raw_data
+                    if is_hw_format:
+                        # Convert hardware format → VitalGuard frame
+                        frame = convert_hardware_frame(raw_data)
+                        pid = "EXP3-HW"  # Experiment 3: hardware integration
+
+                        # Collect voice entries
+                        voice_data = raw_data.get("voice_latest", {})
+                        v_id = voice_data.get("id", -1)
+                        v_text = voice_data.get("text", "")
+                        if v_text and v_id != last_voice_id:
+                            voice_entries.append({"text": v_text, "time": f"{frame_count*2/60:.1f}m"})
+                            last_voice_id = v_id
+                            # Regenerate summary on every new voice entry
+                            v_summary = voice_agent.summarize(voice_entries)
+                            sim_state["voice_summary"] = v_summary
+
+                        # Add fall risk + voice to frame
+                        frame["fall_risk"] = frame.get("fall_risk", {"score": 0, "level": "low", "indicators": []})
+                    else:
+                        frame = raw_data
 
                     # Load patient profile if not cached
                     if pid not in patient_cache:
@@ -485,6 +520,11 @@ async def run_file_watch(speed=1.0):
                     if frame_count % 30 == 0:
                         sim_state["reports"][pid] = generate_report(assessment)
 
+                    # Inject voice summary + fall risk + voice log into twin
+                    twin._voice_summary = sim_state.get("voice_summary", "")
+                    twin._fall_risk = frame.get("fall_risk", {"score": 0, "level": "low", "indicators": []})
+                    twin._voice_log = voice_entries[-10:] if voice_entries else []
+
                     # Encrypt + log
                     ds = twin.to_dashboard_state()
                     envelope = server_ch.encrypt_patient_data(ds)
@@ -511,8 +551,14 @@ async def run_file_watch(speed=1.0):
             except (json.JSONDecodeError, KeyError, IOError, TypeError):
                 pass
 
-        if broadcast_data["patients"] and ws_manager.client_count > 0:
-            await ws_manager.broadcast(broadcast_data)
+        # In hybrid mode, don't broadcast here — run_simulation handles it
+        # In standalone watch mode, broadcast normally
+        if not os.environ.get("VITALGUARD_HYBRID"):
+            if any_update and ws_manager.client_count > 0:
+                broadcast_data = {"type": "update", "frame": frame_count, "patients": {}}
+                for p_id, tw in sim_state["twins"].items():
+                    broadcast_data["patients"][p_id] = tw.to_dashboard_state()
+                await ws_manager.broadcast(broadcast_data)
 
         if any_update:
             frame_count += 1
@@ -526,7 +572,12 @@ async def startup():
     speed = float(os.environ.get("VITALGUARD_SPEED", "1"))
     dur = int(os.environ.get("VITALGUARD_DURATION", "10"))
     watch = os.environ.get("VITALGUARD_WATCH", "")
-    if watch:
+    hybrid = os.environ.get("VITALGUARD_HYBRID", "")
+    if hybrid or (watch and exp):
+        # Hybrid: background patients + file-watch for hardware
+        asyncio.create_task(run_simulation(experiment=None, speed=speed, duration=dur))
+        asyncio.create_task(run_file_watch(speed=speed))
+    elif watch:
         asyncio.create_task(run_file_watch(speed=speed))
     else:
         asyncio.create_task(run_simulation(experiment=exp or None, speed=speed, duration=dur))
@@ -539,6 +590,7 @@ def main():
     parser.add_argument("--port", type=int, default=API_PORT)
     parser.add_argument("--experiment", default="", choices=["", "1", "2", "all"])
     parser.add_argument("--watch", action="store_true", help="File-watch mode: read from data/incoming/")
+    parser.add_argument("--hybrid", action="store_true", help="Hybrid mode: background patients + file-watch")
     parser.add_argument("--speed", type=float, default=1.0)
     parser.add_argument("--duration", type=int, default=10, help="Minutes")
     args = parser.parse_args()
@@ -548,9 +600,14 @@ def main():
     os.environ["VITALGUARD_DURATION"] = str(args.duration)
     if args.watch:
         os.environ["VITALGUARD_WATCH"] = "1"
+    if args.hybrid:
+        os.environ["VITALGUARD_HYBRID"] = "1"
+        os.environ["VITALGUARD_WATCH"] = "1"
 
     print(f"[VitalGuard] Dashboard: http://localhost:{args.port}/dashboard")
-    if args.watch:
+    if args.hybrid:
+        print(f"[VitalGuard] HYBRID MODE: 6 background patients + file-watch for hardware")
+    elif args.watch:
         print(f"[VitalGuard] FILE-WATCH MODE: reading from data/incoming/")
     elif args.experiment:
         print(f"[VitalGuard] EXPERIMENT {args.experiment} | {args.duration}min | {args.speed}x speed")

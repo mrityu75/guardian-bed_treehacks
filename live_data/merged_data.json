@@ -1,5 +1,5 @@
 {
-  "last_update": 1771159837.752634,
+  "last_update": 1771167038.83441,
   "bed_esp1": {
     "module": "bed_esp1",
     "pressures": {
@@ -11,28 +11,28 @@
       "lower_back_left_hip": 0
     },
     "temperatures": {
-      "temp_1": 22.6875,
-      "temp_2": 22.625,
-      "temp_3": 22.5625
+      "temp_1": 22,
+      "temp_2": 22.125,
+      "temp_3": 22.0625
     },
     "mpu1": {
-      "accel_x": 1.604115,
-      "accel_y": -1.721431,
-      "accel_z": 11.66694,
-      "gyro_x": -0.011058,
-      "gyro_y": 0.024914,
-      "gyro_z": -0.189721
+      "accel_x": -0.802058,
+      "accel_y": 0.612916,
+      "accel_z": -10.54646,
+      "gyro_x": -0.121507,
+      "gyro_y": 0.022383,
+      "gyro_z": -0.177864
     },
     "mpu2": {
-      "accel_x": 1.04866,
-      "accel_y": -0.318429,
-      "accel_z": 9.928755,
-      "gyro_x": 0.052893,
-      "gyro_y": -0.025181,
-      "gyro_z": -0.022116
+      "accel_x": -0.198719,
+      "accel_y": 0.565032,
+      "accel_z": -10.1155,
+      "gyro_x": -0.023449,
+      "gyro_y": 0.027845,
+      "gyro_z": -0.01279
     },
-    "timestamp_unified": 1771159833.3522282,
-    "timestamp_esp": 1313046
+    "timestamp_unified": 1771167038.83441,
+    "timestamp_esp": 4522277
   },
   "bed_esp2": {
     "module": "bed_esp2",
@@ -44,46 +44,46 @@
       "lower_leg_right_calf": 0,
       "lower_back_center_spine": 0
     },
-    "timestamp_unified": 1771159837.752634,
-    "timestamp_esp": 1319745
+    "timestamp_unified": 1771167038.83441,
+    "timestamp_esp": 4523874
   },
   "hand": {
     "module": "hand",
     "temperature": {
-      "raw": -39.20313,
-      "corrected": 27.79688,
+      "raw": -37.41016,
+      "corrected": 29.58984,
       "status": "ok"
     },
     "movement": {
-      "accel_x": -1.798046,
-      "accel_y": 1.699883,
-      "accel_z": 10.89841,
-      "gyro_x": -0.034907,
-      "gyro_y": 0.024781,
-      "gyro_z": -0.006395
+      "accel_x": -1.951274,
+      "accel_y": 9.873688,
+      "accel_z": 1.122881,
+      "gyro_x": -0.353862,
+      "gyro_y": 0.027712,
+      "gyro_z": -0.373047
     },
     "heart_rate": {
-      "ir": 0,
-      "red": 0,
+      "ir": 2265,
+      "red": 1977,
       "hand_detected": false
     },
-    "timestamp_unified": 1771153391.586926,
-    "timestamp_esp": 5318389
+    "timestamp_unified": 1771166766.890399,
+    "timestamp_esp": 68030
   },
   "voice_latest": {
     "id": 101,
     "source": "voice",
-    "text": "So that's not a fun time for me to have. See ya.",
-    "timestamp": 1771159831.3441968,
-    "timestamp_unified": 1771159837.752634
+    "text": "It is what it is.",
+    "timestamp": 1771167040.718518,
+    "timestamp_unified": 1771167038.83441
   },
-  "last_update_readable": "2026-02-15T04:50:37.752634",
+  "last_update_readable": "2026-02-15T06:50:38.834410",
   "radar": {
-    "distance_cm": 2240,
+    "distance_cm": 250,
     "moving": false,
-    "presence": 4,
-    "stationary": false,
-    "timestamp": 1771159838.9712107,
-    "timestamp_unified": 1771159837.752634
+    "presence": 2,
+    "stationary": true,
+    "timestamp": 1771167039.5752726,
+    "timestamp_unified": 1771167038.83441
   }
 }

@@ -1,0 +1,36 @@
+{
+  "patient_id": "EXP3-HW",
+  "name": "TESTER",
+  "age": 72,
+  "height_cm": 170,
+  "weight_kg": 78,
+  "room": "ICU-301",
+  "surgery_type": "Hip Replacement",
+  "post_op_day": 2,
+  "is_diabetic": true,
+  "has_cardiovascular_risk": true,
+  "mobility_level": "bed_bound",
+  "assigned_nurse": "Nurse Park",
+  "assigned_doctor": "Dr. Kim",
+  "surgical_history": [
+    "Appendectomy (2018)"
+  ],
+  "lab_results": [
+    {
+      "test": "CBC",
+      "time": "-3h",
+      "wbc": "12.1",
+      "hgb": "11.2",
+      "plt": "198",
+      "status": "elevated WBC"
+    }
+  ],
+  "medications": [
+    "Morphine 2mg IV q4h PRN",
+    "Cefazolin 1g IV q8h",
+    "Enoxaparin 40mg SC daily"
+  ],
+  "allergies": [
+    "Penicillin (rash)"
+  ]
+}
