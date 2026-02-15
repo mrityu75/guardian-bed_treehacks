@@ -1,234 +1,80 @@
-# Guardian Bed
+# GuardianBed - AI Patient Monitoring System
 
-**AI-Powered Continuous Patient Monitoring System**
+Real-time multi-modal sensor system for preventing pressure ulcers and detecting patient deterioration.
 
-Guardian Bed is a full-stack healthcare system that transforms patient care from **reactive monitoring → proactive intervention**. By integrating multimodal sensors, AI models, and secure infrastructure, the system continuously tracks patient conditions across both hospital and home environments.
+## 🎯 Current Status
 
----
+✅ **Data Pipeline:** Fully operational
+- ESP32 bed module collecting sensor data at 10Hz
+- In-memory time-series database
+- File logging system
+- Stable, zero-error data collection
 
-## Overview
+## 📊 Hardware Sensors
 
-Healthcare systems today rely on **intermittent monitoring**, leaving critical gaps where complications go undetected.
+- **12 FSR pressure sensors** (4x3 grid - shoulders, back, sacrum, heels)
+- **3 DS18B20 temperature sensors** (monitoring skin temperature)
+- **2 MPU6050 accelerometers** (detecting movement/repositioning)
+- **3 microphone sensors** (breathing/distress detection)
 
-Guardian Bed solves this by enabling:
+**Data format:** JSON at 10 samples/second
 
-* Continuous real-time monitoring
-* Intelligent patient prioritization
-* Early detection of deterioration
-* Prevention of pressure ulcers and hospital readmissions
+## 🚀 Quick Start
+```bash
+# Install dependencies
+pip install -r requirements.txt
 
----
+# Update config with your ESP32 IP
+# Edit pipeline/config.py
 
-## Key Features
-
-### Multimodal Monitoring
-
-* Pressure mat (ulcer risk detection)
-* Wearable wristband (HR, HRV, motion)
-* Temperature sensors (inflammation detection)
-* mmWave radar (contactless movement & breathing)
-* Voice AI agent (clinical conversation tracking)
-
----
-
-### Intelligent Prioritization
-
-The system computes a unified risk score:
-
-```math
-R_{\text{total}} = \alpha R_{\text{ulcer}} + \beta R_{\text{health}}
+# Run pipeline
+python main.py
 ```
 
-Where:
+## 🤖 For AI/ML Integration
 
-```math
-R_{\text{ulcer}} = f(\text{pressure}, \text{time}, \text{temperature})
+Access real-time sensor data:
+```python
+from pipeline.pipeline import DataPipeline
+from pipeline.config import Config
+
+pipeline = DataPipeline(Config())
+pipeline.start()
+
+# Get database access
+db = pipeline.get_database()
+
+# Latest reading
+latest = db.get_latest_bed()
+
+# Historical data (last 60 seconds)
+history = db.get_bed_history(seconds=60)
 ```
 
-```math
-R_{\text{health}} = f(\text{HR}, \text{HRV}, \text{movement}, \text{temperature})
+## 📁 Project Structure
+```
+guardian-bed/
+├── main.py                    # Entry point
+├── pipeline/
+│   ├── config.py             # ESP32 IP & settings
+│   ├── pipeline.py           # Main coordinator
+│   ├── readers/              # Hardware communication
+│   │   ├── bed_reader.py
+│   │   ├── hand_reader.py
+│   │   └── radar_reader.py
+│   └── storage/              # Data storage
+│       ├── time_series_db.py
+│       └── file_logger.py
+└── data_logs/                # Collected data (.jsonl)
 ```
 
-Patients are ranked in real-time:
+## 📋 Next Steps
 
-```math
-\text{Priority Score} = (1 - R_{\text{total}}) + \text{Immobility} + \text{Urgency}
-```
+- [ ] Program hand module ESP32
+- [ ] Implement AI/ML risk scoring models
+- [ ] Build real-time dashboard
+- [ ] Integrate mmWave radar (optional)
 
----
+## 👥 Team
 
-### Voice AI Clinical Agent
-
-* Converts speech → structured notes
-* Tracks medication timing and symptoms
-* Enables cross-shift communication for nurses
-
----
-
-### Continuous Monitoring Beyond Hospital
-
-* Deployable in both hospital and home
-* Supports critical **30-day post-surgery recovery window**
-* Reduces preventable readmissions
-
----
-
-### Quantum-Safe Security
-
-```math
-\text{Secure System} = \text{BB84} + \text{Kyber-768}
-```
-
-Ensures future-proof protection against quantum attacks.
-
----
-
-## System Architecture
-
-```
-Sensors (Pressure + Wearable + Radar + Audio)
-        ↓
-Data Pipeline (Real-time Streaming @ 10Hz)
-        ↓
-AI Models (Risk Scoring + Classification + NLP)
-        ↓
-Backend (FastAPI + Processing Layer)
-        ↓
-Dashboard + Alerts + Reports
-```
-
----
-
-## Tech Stack
-
-### Hardware
-
-* ESP32 microcontrollers
-* FSR pressure sensors
-* MPU6050 accelerometer
-* MAX30102 (HR, HRV)
-* MAX30205 (temperature)
-* mmWave radar
-* Microphones
-
----
-
-### Software
-
-* Python (data processing, ML)
-* FastAPI (backend)
-* SMTP (alerts & reporting)
-
----
-
-### AI / ML
-
-* Classification models for:
-
-  * ulcer risk
-  * patient deterioration
-* Few-shot learning (speech summarization)
-* Reinforcement learning (report generation)
-
----
-
-### Algorithms
-
-* Segment Tree (efficient time-series queries)
-* Longest Common Subsequence (LCS) for:
-
-  * consistency verification
-  * redundancy removal
-
----
-
-### Security
-
-* BB84 quantum key distribution
-* Kyber-768 post-quantum encryption
-
----
-
-## Impact
-
-Guardian Bed addresses three major healthcare problems:
-
-### 1. Post-Surgery Complications
-
-```math
-\text{Early Detection} \rightarrow \text{Timely Intervention} \rightarrow \text{Better Outcomes}
-```
-
----
-
-### 2. Hospital Readmissions
-
-```math
-\text{Continuous Monitoring} \rightarrow \text{Fewer Readmissions}
-```
-
-* Targets preventable readmissions (~27–40%)
-* Reduces $50B+ annual burden
-
----
-
-### 3. Pressure Ulcers
-
-```math
-\text{Pressure + Time + Temperature} \rightarrow \text{Ulcer Risk}
-```
-
-* Detects prolonged pressure early
-* Prevents tissue damage
-
----
-
-## What Makes Guardian Bed Different
-
-| Feature        | Existing Systems | Guardian Bed      |
-| -------------- | ---------------- | ----------------- |
-| Monitoring     | Intermittent     | Continuous (24/7) |
-| Scope          | Hospital only    | Hospital + Home   |
-| Data           | Fragmented       | Multimodal fusion |
-| Prioritization | Manual           | AI-driven         |
-| Detection      | Reactive         | Predictive        |
-| Communication  | Manual           | Voice AI          |
-| Security       | Standard         | Quantum-safe      |
-
----
-
-## Future Work
-
-* Train models on real clinical datasets
-* Deploy pilot in hospitals
-* Build digital twin patient system
-* Improve personalized risk modeling
-* Scale home monitoring infrastructure
-
----
-
-## Team
-
-* **Quynh Anh Nguyen** — AI, ML, Quantum Security
-* **Aditya** — Hardware & Sensor Systems
-* **Jay** — Backend, Frontend, Prioritization Systems
-
----
-
-## Vision
-
-> A future where no critical signal is missed—and every patient is continuously protected.
-
----
-
-## License
-
-MIT License
-
----
-
-## Acknowledgments
-
-Built for healthcare innovation and patient safety.
-
-
+Built for TreeHacks 2026 - Healthcare Track

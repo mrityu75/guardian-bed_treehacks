@@ -1,0 +1,227 @@
+{
+  "experiment": "VitalGuard E2E",
+  "timestamp": "2026-02-14 05:35:11",
+  "config": {
+    "scenarios": "ALL",
+    "duration_min": 30,
+    "encryption": true
+  },
+  "total_elapsed_sec": 0.93,
+  "results": [
+    {
+      "scenario": "A \u2014 Stable Recovery",
+      "patient": {
+        "id": "PID-A001",
+        "name": "Alice Stable",
+        "surgery": "Knee Arthroplasty",
+        "post_op_day": 2,
+        "age": 52,
+        "bmi": 23.3
+      },
+      "duration": {
+        "frames": 900,
+        "minutes": 30.0,
+        "processing_sec": 0.24,
+        "fps": 3741.9
+      },
+      "risk": {
+        "average": 32.13,
+        "max": 35.4,
+        "min": 24.9,
+        "final": 33.5,
+        "level_distribution": {
+          "info": 197,
+          "caution": 703,
+          "warning": 0,
+          "critical": 0
+        }
+      },
+      "vitals": {
+        "avg_hr": 70.1,
+        "avg_spo2": 98.0,
+        "avg_temp": 36.63
+      },
+      "alerts": {
+        "total": 0,
+        "details": []
+      },
+      "posture_changes": 0,
+      "encryption": {
+        "enabled": true,
+        "avg_ms": 1.173,
+        "samples": 90
+      },
+      "stress": {
+        "final_index": 0.083,
+        "trend": "stable"
+      },
+      "report_preview": "CLINICAL STATUS REPORT\n========================================\nPatient: Alice Stable (PID-A001)\nRisk Score: 34/100 [CAUTION]\n\nSTATUS SUMMARY:\nPatient Alice Stable is currently classified as CAUTION with an integrated\nrisk score of 34/100. Routine monitoring continues.\n\nVITAL SIGNS:\n  heart_rate: 71"
+    },
+    {
+      "scenario": "B \u2014 Gradual Deterioration",
+      "patient": {
+        "id": "PID-B001",
+        "name": "Bob Gradual",
+        "surgery": "Hip Replacement",
+        "post_op_day": 2,
+        "age": 85,
+        "bmi": 25.8
+      },
+      "duration": {
+        "frames": 900,
+        "minutes": 30.0,
+        "processing_sec": 0.23,
+        "fps": 3858.3
+      },
+      "risk": {
+        "average": 44.57,
+        "max": 63.2,
+        "min": 27.9,
+        "final": 62.0,
+        "level_distribution": {
+          "info": 15,
+          "caution": 789,
+          "warning": 96,
+          "critical": 0
+        }
+      },
+      "vitals": {
+        "avg_hr": 79.9,
+        "avg_spo2": 96.0,
+        "avg_temp": 37.18
+      },
+      "alerts": {
+        "total": 5,
+        "details": [
+          {
+            "frame": 799,
+            "risk": 62.1,
+            "level": "warning",
+            "reason": "Escalated to WARNING (score: 62)"
+          },
+          {
+            "frame": 802,
+            "risk": 62.4,
+            "level": "warning",
+            "reason": "Escalated to WARNING (score: 62)"
+          },
+          {
+            "frame": 808,
+            "risk": 60.1,
+            "level": "warning",
+            "reason": "Escalated to WARNING (score: 60)"
+          },
+          {
+            "frame": 812,
+            "risk": 60.3,
+            "level": "warning",
+            "reason": "Escalated to WARNING (score: 60)"
+          },
+          {
+            "frame": 827,
+            "risk": 60.3,
+            "level": "warning",
+            "reason": "Escalated to WARNING (score: 60)"
+          }
+        ]
+      },
+      "posture_changes": 0,
+      "encryption": {
+        "enabled": true,
+        "avg_ms": 1.116,
+        "samples": 90
+      },
+      "stress": {
+        "final_index": 0.621,
+        "trend": "stable"
+      },
+      "report_preview": "CLINICAL STATUS REPORT\n========================================\nPatient: Bob Gradual (PID-B001)\nRisk Score: 62/100 [WARNING]\n\nSTATUS SUMMARY:\nPatient Bob Gradual is currently classified as WARNING with an integrated\nrisk score of 62/100. Immediate attention recommended.\n\nVITAL SIGNS:\n  heart_rate: 9"
+    },
+    {
+      "scenario": "C \u2014 Acute Crisis",
+      "patient": {
+        "id": "PID-C001",
+        "name": "Charlie Crisis",
+        "surgery": "Craniotomy",
+        "post_op_day": 7,
+        "age": 68,
+        "bmi": 28.2
+      },
+      "duration": {
+        "frames": 900,
+        "minutes": 30.0,
+        "processing_sec": 0.24,
+        "fps": 3700.1
+      },
+      "risk": {
+        "average": 54.09,
+        "max": 68.2,
+        "min": 47.6,
+        "final": 65.3,
+        "level_distribution": {
+          "info": 0,
+          "caution": 640,
+          "warning": 260,
+          "critical": 0
+        }
+      },
+      "vitals": {
+        "avg_hr": 84.5,
+        "avg_spo2": 95.5,
+        "avg_temp": 38.01
+      },
+      "alerts": {
+        "total": 6,
+        "details": [
+          {
+            "frame": 626,
+            "risk": 60.1,
+            "level": "warning",
+            "reason": "Escalated to WARNING (score: 60)"
+          },
+          {
+            "frame": 629,
+            "risk": 60.4,
+            "level": "warning",
+            "reason": "Escalated to WARNING (score: 60)"
+          },
+          {
+            "frame": 635,
+            "risk": 64.4,
+            "level": "warning",
+            "reason": "Escalated to WARNING (score: 64)"
+          },
+          {
+            "frame": 642,
+            "risk": 64.2,
+            "level": "warning",
+            "reason": "Escalated to WARNING (score: 64)"
+          },
+          {
+            "frame": 647,
+            "risk": 60.1,
+            "level": "warning",
+            "reason": "Escalated to WARNING (score: 60)"
+          },
+          {
+            "frame": 651,
+            "risk": 60.0,
+            "level": "warning",
+            "reason": "Escalated to WARNING (score: 60)"
+          }
+        ]
+      },
+      "posture_changes": 0,
+      "encryption": {
+        "enabled": true,
+        "avg_ms": 1.172,
+        "samples": 90
+      },
+      "stress": {
+        "final_index": 0.902,
+        "trend": "stable"
+      },
+      "report_preview": "CLINICAL STATUS REPORT\n========================================\nPatient: Charlie Crisis (PID-C001)\nRisk Score: 65/100 [WARNING]\n\nSTATUS SUMMARY:\nPatient Charlie Crisis is currently classified as WARNING with an integrated\nrisk score of 65/100. Immediate attention recommended.\n\nVITAL SIGNS:\n  heart_r"
+    }
+  ]
+}

@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VitalGuard — Post-Surgical Monitoring</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0b0d12;--bg2:#0f1118;--card:#13151e;--card2:#171a25;--hover:#1a1d2a;--border:#1e2130;--borderH:#282c3a;--elev:#1c1f2c;--t1:#ebedf2;--t2:#8b90a4;--t3:#5c6078;--t4:#3a3e50;--acc:#4a7dff;--accG:rgba(74,125,255,.06);--accL:rgba(74,125,255,.1);--grn:#2dd4a0;--grnG:rgba(45,212,160,.06);--amb:#f0a030;--ambG:rgba(240,160,48,.06);--red:#f05050;--redG:rgba(240,80,80,.06);--r:14px;--rs:10px;--sh:0 2px 8px rgba(0,0,0,.2),0 8px 32px rgba(0,0,0,.15);--shL:0 12px 48px rgba(0,0,0,.3);--tr:.25s cubic-bezier(.4,0,.2,1)}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+.login{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;transition:opacity .5s,transform .5s}
+.login.gone{opacity:0;pointer-events:none;transform:scale(1.02)}
+.login-bg{position:absolute;inset:0;background:linear-gradient(160deg,#060810,#0c1020,#08101a)}
+.login-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 35% 45%,rgba(74,125,255,.08),transparent 55%),radial-gradient(ellipse at 65% 55%,rgba(45,212,160,.04),transparent 45%)}
+.lbox{position:relative;text-align:center;animation:fi .7s ease}
+@keyframes fi{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.llogoR{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:10px}
+.lmk{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#4a7dff,#2dd4a0);display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px rgba(74,125,255,.25)}
+.llogoR h1{font-family:'Playfair Display',serif;font-size:30px;color:#fff;letter-spacing:.5px}
+.llogoR h1 span{color:#6ea8ff}
+.lsub2{color:#4a5070;font-size:13px;margin-bottom:8px;letter-spacing:2px;text-transform:uppercase;font-weight:600}
+.lline{width:40px;height:1px;background:linear-gradient(90deg,transparent,#4a7dff,transparent);margin:0 auto 36px}
+.pinR{display:flex;gap:14px;justify-content:center;margin-bottom:30px}
+.pd{width:56px;height:56px;border-radius:14px;background:rgba(255,255,255,.02);border:1.5px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;transition:var(--tr)}
+.pd.on{border-color:#4a7dff;background:rgba(74,125,255,.08);box-shadow:0 0 20px rgba(74,125,255,.15)}
+.pd.err{border-color:#f05050;background:rgba(240,80,80,.08);animation:shk .4s}
+@keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.kpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:244px;margin:0 auto}
+.kb{width:74px;height:54px;border-radius:12px;border:1px solid rgba(255,255,255,.04);background:rgba(255,255,255,.02);color:#fff;font-size:20px;font-weight:500;font-family:'Outfit';cursor:pointer;transition:var(--tr)}
+.kb:hover{background:rgba(255,255,255,.06)}.kb:active{transform:scale(.95)}
+.kb.fn{font-size:11px;color:#5a6080;letter-spacing:.5px}
+.lerr{color:#f05050;font-size:12px;height:18px;margin-top:16px}
+
+.hdr{position:sticky;top:0;z-index:100;background:rgba(11,13,18,.9);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between}
+.hlogo{display:flex;align-items:center;gap:11px}
+.hmk{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#4a7dff,#2dd4a0);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(74,125,255,.15)}
+.hlogo h1{font-family:'Playfair Display',serif;font-size:18px;font-weight:600}.hlogo h1 span{color:var(--acc)}
+.hR{display:flex;align-items:center;gap:22px}
+.hs{text-align:right}.hs .hsl{font-size:9px;color:var(--t4);text-transform:uppercase;letter-spacing:1.2px;font-weight:600}.hs .hsv{font-size:13px;font-weight:700}
+.ht{font-size:11px;color:var(--t3);padding:5px 12px;background:var(--card);border:1px solid var(--border);border-radius:6px;font-weight:500}
+
+.app{display:none}.app.on{display:block}
+.main{padding:24px 40px 50px;max-width:1460px;margin:0 auto}
+.gold-line{width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(200,160,80,.15),transparent);margin-bottom:24px}
+.sw{position:relative;margin-bottom:22px}
+.si{width:100%;padding:13px 18px 13px 44px;background:var(--card);border:1px solid var(--border);border-radius:11px;font-size:13px;font-family:'Outfit';color:var(--t1);outline:none;transition:var(--tr)}
+.si::placeholder{color:var(--t4)}.si:focus{border-color:rgba(74,125,255,.4);box-shadow:0 0 0 3px var(--accG)}
+.sic{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--t4)}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:22px}
+.stc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;display:flex;align-items:center;gap:13px;transition:var(--tr)}
+.stc:hover{border-color:var(--borderH);background:var(--card2)}
+.stI{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.stI.b{background:var(--accG);color:var(--acc)}.stI.g{background:var(--grnG);color:var(--grn)}.stI.a{background:var(--ambG);color:var(--amb)}.stI.r{background:var(--redG);color:var(--red)}
+.stV{font-size:24px;font-weight:800;line-height:1}.stL{font-size:10px;color:var(--t4);text-transform:uppercase;letter-spacing:1px;margin-top:1px;font-weight:600}
+
+.secT{font-size:11px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:2px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.secT::before{content:'';width:16px;height:1px;background:var(--acc)}
+
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+.pc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px;cursor:pointer;transition:var(--tr);position:relative;overflow:hidden}
+.pc::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--acc),var(--grn));opacity:0;transition:var(--tr)}
+.pc:hover{transform:translateY(-2px);box-shadow:var(--sh);border-color:var(--borderH);background:var(--hover)}.pc:hover::after{opacity:1}
+.pcT{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:11px}
+.av{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--acc),#9070f0);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#fff}
+.sd{width:9px;height:9px;border-radius:50%;margin-top:4px}
+.sd.stable{background:var(--grn);box-shadow:0 0 6px rgba(45,212,160,.4)}
+.sd.caution{background:var(--amb);box-shadow:0 0 6px rgba(240,160,48,.4)}
+.sd.critical{background:var(--red);box-shadow:0 0 6px rgba(240,80,80,.4);animation:bl 1.2s infinite}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.3}}
+.pcN{font-size:14px;font-weight:600;margin-bottom:1px}.pcI{font-size:10px;color:var(--t4);letter-spacing:.5px;margin-bottom:11px}
+.pcV{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.pvL{font-size:8px;color:var(--t4);text-transform:uppercase;letter-spacing:.8px;font-weight:600}.pvV{font-size:12px;font-weight:600}
+.ok{color:var(--grn)}.wn{color:var(--amb)}.bd{color:var(--red)}
+.pcB{margin-top:11px;padding-top:9px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:10px;color:var(--t4)}
+
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(10px);z-index:200;display:none;justify-content:center;align-items:flex-start;padding:20px;overflow-y:auto}
+.ov.on{display:flex}
+.det{background:var(--bg2);border:1px solid var(--border);border-radius:18px;width:100%;max-width:1160px;box-shadow:var(--shL);animation:up .3s cubic-bezier(.16,1,.3,1)}
+@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.dH{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;background:var(--card);border-bottom:1px solid var(--border)}
+.dP{display:flex;align-items:center;gap:14px}
+.dA{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,var(--acc),#9070f0);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#fff;box-shadow:0 4px 16px rgba(74,125,255,.18)}
+.dN{font-family:'Playfair Display',serif;font-size:20px;font-weight:600}
+.dM{display:flex;gap:14px;margin-top:2px;flex-wrap:wrap}.dM span{font-size:11px;color:var(--t3)}.dM strong{color:var(--t2);font-weight:500}
+.xb{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--t3);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--tr)}.xb:hover{background:var(--hover);color:var(--t1)}
+.vChart{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 12px;position:relative;overflow:hidden}
+.vChLabel{font-size:8px;font-weight:700;color:var(--t4);letter-spacing:1px;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between}
+.vChRight{display:flex;align-items:baseline;gap:3px}
+.vChVal{font-size:13px;font-weight:800}
+.vChUnit{font-size:8px;font-weight:500;color:var(--t4)}
+.vChart canvas{width:100%;display:block;margin-top:4px}
+.dB{padding:22px 28px}
+
+.vr{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+.vc{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:8px 13px;display:flex;align-items:center;gap:8px}
+.vc .vd{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.vc .vl{font-size:8px;color:var(--t4);text-transform:uppercase;letter-spacing:.8px;font-weight:600}
+.vc .vv{font-size:15px;font-weight:700}
+
+.rpt{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:28px 30px;margin-bottom:16px}
+.rH{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.rT{font-family:'Playfair Display',serif;font-size:18px;display:flex;align-items:center;gap:10px}
+.rT .rb{width:3px;height:20px;border-radius:2px;background:var(--acc)}
+.rTs{font-size:10px;color:var(--t4)}
+.rB{font-size:13.5px;line-height:1.95;color:var(--t2)}
+.rB p{margin-bottom:14px}.rB p:last-child{margin-bottom:0}
+.rB strong{color:var(--t1);font-weight:600}
+.rB .tok{color:var(--grn);font-weight:600}.rB .twn{color:var(--amb);font-weight:600}.rB .tbd{color:var(--red);font-weight:600}
+.rS{margin-top:18px;padding-top:14px;border-top:1px solid var(--border)}
+.rS h4{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t4);margin-bottom:10px;font-weight:700}
+.rec{display:flex;flex-direction:column;gap:6px}
+.ri{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:var(--bg);border-radius:9px;font-size:12.5px;color:var(--t2);line-height:1.55;border:1px solid var(--border)}
+.rn{width:20px;height:20px;border-radius:6px;background:var(--accG);color:var(--acc);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid rgba(74,125,255,.12)}
+
+.tC{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:16px}
+.tC h3{font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.tC h3 .ld{width:5px;height:5px;border-radius:50%;background:var(--grn);box-shadow:0 0 6px var(--grn);animation:bl 2s infinite}
+.tC h3 .hint{margin-left:auto;font-weight:400;color:var(--t4);font-size:9px;text-transform:none;letter-spacing:0}
+#tbox{width:100%;min-width:300px;height:280px;min-height:280px;border-radius:var(--rs);overflow:hidden;background:#0b0d12;cursor:grab}#tbox:active{cursor:grabbing}
+.pr{display:flex;gap:7px;margin-top:10px}
+.pt{padding:5px 11px;border-radius:6px;font-size:10px;font-weight:600;background:var(--bg);border:1px solid var(--border);color:var(--t3)}
+.pt.ac{background:var(--accG);border-color:rgba(74,125,255,.15);color:var(--acc)}
+.pt.wr{border-color:rgba(240,160,48,.15);color:var(--amb)}
+
+.cg{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px}
+.cc{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:12px}
+.cc h3{font-size:9px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.cc h3 .cd{width:4px;height:4px;border-radius:50%;background:var(--grn);box-shadow:0 0 4px var(--grn)}
+.cw{height:80px}.cw canvas{width:100%!important;height:100%!important}
+
+.lc{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:14px}
+.lc h3{font-size:9px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.li{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;font-size:11px;margin-bottom:4px}.li:last-child{margin-bottom:0}
+.li.info{background:var(--accG);border-left:2px solid var(--acc)}
+.li.warning{background:var(--ambG);border-left:2px solid var(--amb)}
+.li.critical{background:var(--redG);border-left:2px solid var(--red)}
+.li.success{background:var(--grnG);border-left:2px solid var(--grn)}
+.lt{font-size:9px;color:var(--t4);min-width:40px;font-weight:600}.lx{color:var(--t2)}
+
+@media(max-width:1200px){.pgrid{grid-template-columns:repeat(3,1fr)}.cg{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.pgrid{grid-template-columns:repeat(2,1fr)}.cg{grid-template-columns:1fr 1fr}.stats{grid-template-columns:repeat(2,1fr)}.hdr{padding:0 16px}.main{padding:16px}}
+</style>
+</head>
+<body>
+<!-- APP (no login) -->
+<div class="app on" id="app">
+<header class="hdr"><div class="hlogo"><div class="hmk"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><h1>Vital<span>Guard</span></h1></div>
+<div class="hR"><div class="hs"><span class="hsl">Patients</span><span class="hsv" id="pCount">—</span></div><div class="hs"><span class="hsl">Alerts</span><span class="hsv" id="aCount" style="color:var(--amb)">0</span></div><div class="hs"><span class="hsl">Link</span><span class="hsv" id="wsStatus" style="color:var(--t3)">⏳</span></div><div class="ht" id="clk">&mdash;</div></div></header>
+<div class="main"><div class="gold-line"></div>
+<div class="sw"><svg class="sic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input class="si" id="sb" placeholder="Search by patient name or ID..."></div>
+<div class="stats">
+<div class="stc"><div class="stI b"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div><div class="stV" id="sTotal">—</div><div class="stL">Total</div></div></div>
+<div class="stc"><div class="stI g"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div><div class="stV" id="sStable">—</div><div class="stL">Stable</div></div></div>
+<div class="stc"><div class="stI a"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg></div><div><div class="stV" id="sCaution">—</div><div class="stL">Caution</div></div></div>
+<div class="stc"><div class="stI r"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/></svg></div><div><div class="stV" id="sCritical">—</div><div class="stL">Critical</div></div></div>
+</div>
+<div class="secT">Patient Overview</div><div class="pgrid" id="grid"></div></div></div>
+
+<!-- DETAIL -->
+<div class="ov" id="ov"><div class="det">
+<div class="dH"><div class="dP"><div class="dA" id="dA">&mdash;</div><div><div class="dN" id="dN">&mdash;</div><div class="dM"><span>ID: <strong id="dI">&mdash;</strong></span><span>Room: <strong id="dR">&mdash;</strong></span><span>Surgery: <strong id="dS">&mdash;</strong></span><span>Day: <strong id="dD">&mdash;</strong></span><span id="dDoc" style="color:#4a7dff">&mdash;</span><span id="dNrs" style="color:#2dd4a0">&mdash;</span></div></div></div><button class="xb" id="xb">&times;</button></div>
+<div class="dB" style="display:grid;grid-template-columns:1fr 200px;gap:16px;">
+<!-- LEFT: Patient Info + Clinical Report -->
+<div class="dLeft">
+
+<!-- Risk Badge Bar -->
+<div style="display:flex;gap:10px;margin-bottom:14px;align-items:center">
+  <div id="riskBadge" style="padding:6px 16px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase">STABLE</div>
+  <div style="font-size:11px;color:var(--t3)">Risk Score: <strong id="riskVal" style="font-size:16px;color:var(--t1)">0</strong><span style="color:var(--t4)">/100</span></div>
+</div>
+
+<!-- Patient Profile Card -->
+<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;margin-bottom:14px">
+  <div style="font-size:9px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px">Patient Profile</div>
+  <div id="profileGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;font-size:12px;color:var(--t2)"></div>
+</div>
+
+<!-- Medications & Allergies -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px">
+    <div style="font-size:9px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px">Current Medications</div>
+    <div id="medsList" style="font-size:11px;color:var(--t2);line-height:1.8"></div>
+  </div>
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px">
+    <div style="font-size:9px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px">Allergies</div>
+    <div id="allergyList" style="font-size:11px;color:var(--t2);line-height:1.8;margin-bottom:10px"></div>
+    <div style="font-size:9px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;margin-top:4px">Lab Results</div>
+    <div id="labList" style="font-size:11px;color:var(--t2);line-height:1.8"></div>
+  </div>
+</div>
+
+<!-- AI Clinical Report -->
+<div class="rpt" id="rpt"></div>
+
+<!-- Activity Log -->
+<div class="lc" style="margin-top:14px"><h3>Activity Log</h3><div id="al"></div></div>
+</div>
+
+<!-- RIGHT: Vital Sign Charts (vertical) -->
+<div class="dRight" style="display:flex;flex-direction:column;gap:6px">
+  <div class="vChart"><div class="vChLabel"><span>HR</span><div class="vChRight"><span class="vChVal" id="cvHR">—</span><span class="vChUnit">bpm</span></div></div><canvas id="cHR" height="60"></canvas></div>
+  <div class="vChart"><div class="vChLabel"><span>TEMP</span><div class="vChRight"><span class="vChVal" id="cvTemp">—</span><span class="vChUnit">&deg;C</span></div></div><canvas id="cTemp" height="60"></canvas></div>
+  <div class="vChart"><div class="vChLabel"><span>SpO2</span><div class="vChRight"><span class="vChVal" id="cvSpO2">—</span><span class="vChUnit">%</span></div></div><canvas id="cSpO2" height="60"></canvas></div>
+  <div class="vChart"><div class="vChLabel"><span>RISK</span><div class="vChRight"><span class="vChVal" id="cvRisk">—</span><span class="vChUnit">/100</span></div></div><canvas id="cRisk" height="60"></canvas></div>
+</div>
+
+</div>
+<!-- 3D & Pressure Section (full width bottom) -->
+<div style="padding:0 28px 22px 28px;display:grid;grid-template-columns:1fr 200px;gap:16px">
+  <div class="tC" style="margin-bottom:0"><h3><span class="ld"></span> Real-Time Patient Posture &mdash; 3D Simulation <span class="hint">Drag to rotate</span></h3><div id="tbox" style="height:280px"></div><div class="pr"><div class="pt ac">Supine</div><div class="pt">Duration: 0 min</div><div class="pt wr">Reposition in 90 min</div></div></div>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div id="pressureMap" style="padding:14px;background:var(--card);border-radius:var(--r);border:1px solid var(--border);flex:1"><div style="font-size:9px;color:var(--t4);margin-bottom:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase">Pressure Mat &mdash; 12 Zone FSR</div><div id="pzGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:3px;max-width:160px;margin:0 auto"></div><div style="display:flex;justify-content:space-between;margin-top:8px;font-size:8px;color:var(--t4)"><span>Low</span><div style="flex:1;margin:0 6px;height:4px;border-radius:2px;background:linear-gradient(90deg,#2dd4a0,#f59e42,#ef4444)"></div><span>High</span></div></div>
+  </div>
+</div>
+</div></div>
+<script>
+// =============================================
+// VitalGuard Dashboard — WebSocket Connected
+// =============================================
+// Dual mode: connects to API server if available,
+// falls back to built-in simulation data.
+
+// Auto-init (no login)
+initConnection();
+
+// =============================================
+// DATA LAYER
+// =============================================
+var P = [];  // Patient list (populated by WS or fallback)
+var wsConn = null;
+var wsConnected = false;
+var alertTotal = 0;
+
+function mapLevel(lvl) {
+  if (lvl === 'critical') return 'critical';
+  if (lvl === 'warning' || lvl === 'caution') return 'caution';
+  return 'stable';
+}
+
+function patientFromTwin(d) {
+  // Convert digital twin dashboard state to patient card format
+  var v = d.vitals || {};
+  var hr = v.heart_rate ? v.heart_rate.value : 72;
+  var tp = v.body_temp ? v.body_temp.value : 36.7;
+  var sp = v.spo2 ? v.spo2.value : 98;
+  var hv = v.hrv ? v.hrv.value : 42;
+  var rr = v.resp_rate ? v.resp_rate.value : 16;
+  var st = mapLevel(d.risk_level || 'info');
+  var nm = d.patient_name || 'Unknown';
+  var ini = nm.split(' ').map(function(w){return w[0]}).join('').substring(0,2);
+  return {
+    id: d.patient_id,
+    nm: nm,
+    ini: ini,
+    rm: d.room || '—',
+    sg: d.surgery_type || '—',
+    dy: d.post_op_day || 1,
+    st: st,
+    hr: Math.round(hr),
+    tp: +tp.toFixed(1),
+    sp: Math.round(sp),
+    hv: Math.round(hv),
+    bp: '—',
+    rr: Math.round(rr),
+    risk: d.risk_score || 0,
+    riskLevel: d.risk_level || 'info',
+    stress: d.stress_level || 0,
+    posture: d.posture || {},
+    alerts: d.alerts || [],
+    alertCount: d.alert_count || 0,
+    history: d.history || {},
+    pressureZones: d.pressure_zones || {},
+    profile: d.profile || {},
+    movement: d.movement_level || 0.3,
+    consciousness: d.consciousness || 'responsive',
+    nurse: (d.profile && d.profile.assigned_nurse) || '—',
+    doctor: (d.profile && d.profile.assigned_doctor) || '—',
+    meds: (d.profile && d.profile.medications) || [],
+    labs: (d.profile && d.profile.lab_results) || [],
+    allergies: (d.profile && d.profile.allergies) || [],
+    surgHist: (d.profile && d.profile.surgical_history) || [],
+    _raw: d
+  };
+}
+
+// =============================================
+// WEBSOCKET CONNECTION
+// =============================================
+function initConnection() {
+  var host = location.hostname || 'localhost';
+  var port = location.port || '8000';
+  var wsUrl = 'ws://' + host + ':' + port + '/ws';
+
+  // Try WebSocket
+  try {
+    wsConn = new WebSocket(wsUrl);
+    document.getElementById('wsStatus').textContent = '⏳';
+    document.getElementById('wsStatus').style.color = 'var(--amb)';
+
+    wsConn.onopen = function() {
+      wsConnected = true;
+      document.getElementById('wsStatus').textContent = '●';
+      document.getElementById('wsStatus').style.color = 'var(--grn)';
+      console.log('[VG] WebSocket connected to ' + wsUrl);
+    };
+
+    wsConn.onmessage = function(e) {
+      try {
+        var msg = JSON.parse(e.data);
+        if (msg.type === 'update') {
+          handleUpdate(msg);
+        } else if (msg.type === 'patient_detail') {
+          handlePatientDetail(msg.data);
+        }
+      } catch(err) {
+        console.error('[VG] Parse error:', err);
+      }
+    };
+
+    wsConn.onclose = function() {
+      wsConnected = false;
+      document.getElementById('wsStatus').textContent = '○';
+      document.getElementById('wsStatus').style.color = 'var(--red)';
+      console.log('[VG] WebSocket disconnected. Reconnecting in 3s...');
+      setTimeout(initConnection, 3000);
+    };
+
+    wsConn.onerror = function() {
+      console.log('[VG] WebSocket error. Falling back to demo data.');
+      wsConn.close();
+      loadFallbackData();
+    };
+
+    // If no message within 3s, use fallback
+    setTimeout(function() {
+      if (P.length === 0) {
+        console.log('[VG] No data received. Using fallback.');
+        loadFallbackData();
+      }
+    }, 3000);
+
+  } catch(err) {
+    console.log('[VG] WebSocket unavailable. Using fallback.');
+    loadFallbackData();
+  }
+}
+
+function handleUpdate(msg) {
+  // Rebuild patient list from broadcast
+  var newP = [];
+  for (var pid in msg.patients) {
+    newP.push(patientFromTwin(msg.patients[pid]));
+  }
+  if (newP.length > 0) {
+    P = newP;
+    render();
+    document.getElementById('pCount').textContent = P.length;
+    var totalAlerts = P.reduce(function(s,p){return s + p.alertCount}, 0);
+    document.getElementById('aCount').textContent = totalAlerts > 0 ? totalAlerts : '0';
+    document.getElementById('aCount').style.color = totalAlerts > 0 ? 'var(--red)' : 'var(--grn)';
+
+    // If detail panel is open, update it
+    if (curP && ov.classList.contains('on')) {
+      var updated = P.find(function(p){return p.id === curP.id});
+      if (updated) {
+        curP = updated;
+        updateDetailPanel(updated);
+      }
+    }
+  }
+}
+
+function handlePatientDetail(data) {
+  // Handle detailed patient data response
+  var p = patientFromTwin(data);
+  var idx = P.findIndex(function(x){return x.id === p.id});
+  if (idx >= 0) P[idx] = p;
+  if (curP && curP.id === p.id) {
+    curP = p;
+    updateDetailPanel(p);
+  }
+}
+
+// =============================================
+// FALLBACK DATA (demo mode)
+// =============================================
+function loadFallbackData() {
+  document.getElementById('wsStatus').textContent = 'Demo';
+  document.getElementById('wsStatus').style.color = 'var(--t3)';
+
+  var demoMeds=['Morphine 2mg IV q4h PRN','Cefazolin 1g IV q8h','Enoxaparin 40mg SC daily','Omeprazole 40mg IV daily','Acetaminophen 1g IV q6h'];
+  var demoLabs=[
+    {test:'CBC',time:'-2h',wbc:'7.2',hgb:'12.8',plt:'245',status:'normal'},
+    {test:'BMP',time:'-4h',na:'140',k:'4.1',cr:'0.9',glucose:'98',status:'normal'},
+    {test:'Lactate',time:'-1h',value:'1.2',unit:'mmol/L',status:'normal'}
+  ];
+  var critLabs=[
+    {test:'CBC',time:'-1h',wbc:'12.4',hgb:'10.2',plt:'180',status:'elevated WBC'},
+    {test:'BMP',time:'-2h',na:'137',k:'3.6',cr:'1.4',glucose:'186',status:'elevated Cr/glucose'},
+    {test:'Lactate',time:'-30min',value:'3.8',unit:'mmol/L',status:'elevated'},
+    {test:'Procalcitonin',time:'-2h',value:'0.3',unit:'ng/mL',status:'normal'}
+  ];
+
+  P = [
+    {id:'PID-2406',nm:'William Park',ini:'WP',rm:'ICU-211',sg:'Craniotomy',dy:4,st:'critical',hr:104,tp:38.4,sp:92,hv:18,bp:'148/96',rr:24,risk:78,riskLevel:'critical',stress:0.8,posture:{current:'supine',duration_min:95,reposition_status:'overdue',remaining_min:0},alerts:['Tachycardia with hypoxemia','Repositioning overdue','HR rising while SpO2 falling'],alertCount:3,history:{},pressureZones:{},profile:{age:68,bmi:26.2,is_elderly:true,is_diabetic:false},movement:0.08,consciousness:'reduced',nurse:'Nurse Kim',doctor:'Dr. Han',meds:['Morphine 2mg IV q4h PRN','Cefazolin 1g IV q8h','Enoxaparin 40mg SC daily','Metoprolol 25mg PO BID','Ondansetron 4mg IV PRN'],labs:critLabs,allergies:['Penicillin (rash)'],surgHist:['Appendectomy (2018)','Cataract surgery (2022)']},
+    {id:'PID-2402',nm:'James Sullivan',ini:'JS',rm:'ICU-206',sg:'Hip Replacement',dy:1,st:'caution',hr:91,tp:37.9,sp:95,hv:28,bp:'134/88',rr:20,risk:52,riskLevel:'caution',stress:0.45,posture:{current:'supine',duration_min:55,reposition_status:'warning',remaining_min:35},alerts:['Temp trending up'],alertCount:1,history:{},pressureZones:{},profile:{age:72,bmi:28.1,is_elderly:true,is_diabetic:true},movement:0.2,consciousness:'responsive',nurse:'Nurse Park',doctor:'Dr. Yoon',meds:['Morphine 2mg IV q4h PRN','Cefazolin 1g IV q8h','Insulin glargine 20u SC QHS','Metformin 500mg PO BID'],labs:demoLabs.concat([{test:'CRP',time:'-6h',value:'5.2',unit:'mg/L',status:'mildly elevated'}]),allergies:['NKDA'],surgHist:['Hernia repair (2015)']},
+    {id:'PID-2415',nm:'Grace Wilson',ini:'GW',rm:'ICU-215',sg:'Nephrectomy',dy:3,st:'caution',hr:86,tp:37.6,sp:96,hv:29,bp:'132/86',rr:18,risk:45,riskLevel:'caution',stress:0.35,posture:{current:'left_lateral',duration_min:40,reposition_status:'warning',remaining_min:50},alerts:[],alertCount:0,history:{},pressureZones:{},profile:{age:64,bmi:27.4,is_elderly:false,is_diabetic:false},movement:0.25,consciousness:'responsive',nurse:'Nurse Lee',doctor:'Dr. Shin',meds:['Ketorolac 15mg IV q6h','Cefazolin 1g IV q8h','Famotidine 20mg IV q12h'],labs:demoLabs,allergies:['Sulfa drugs (hives)'],surgHist:['Cholecystectomy (2020)']},
+    {id:'PID-2408',nm:'David Kim',ini:'DK',rm:'ICU-207',sg:'Lumbar Disc',dy:2,st:'caution',hr:88,tp:37.5,sp:96,hv:30,bp:'130/84',rr:19,risk:42,riskLevel:'caution',stress:0.3,posture:{current:'right_lateral',duration_min:30,reposition_status:'ok',remaining_min:60},alerts:[],alertCount:0,history:{},pressureZones:{},profile:{age:55,bmi:24.8,is_elderly:false,is_diabetic:false},movement:0.3,consciousness:'responsive',nurse:'Nurse Choi',doctor:'Dr. Kwon',meds:demoMeds.slice(0,4),labs:demoLabs,allergies:['NKDA'],surgHist:[]},
+    {id:'PID-2401',nm:'Eleanor Mitchell',ini:'EM',rm:'ICU-204',sg:'Spinal Fusion',dy:2,st:'stable',hr:72,tp:36.8,sp:98,hv:42,bp:'118/76',rr:16,risk:18,riskLevel:'info',stress:0.12,posture:{current:'supine',duration_min:20,reposition_status:'ok',remaining_min:70},alerts:[],alertCount:0,history:{},pressureZones:{},profile:{age:52,bmi:23.5,is_elderly:false,is_diabetic:false},movement:0.4,consciousness:'responsive',nurse:'Nurse Jung',doctor:'Dr. Seo',meds:demoMeds.slice(0,3),labs:demoLabs,allergies:['NKDA'],surgHist:['Tonsillectomy (childhood)']},
+    {id:'PID-2403',nm:'Maria Gonzalez',ini:'MG',rm:'ICU-201',sg:'Cardiac Bypass',dy:3,st:'stable',hr:68,tp:36.6,sp:99,hv:48,bp:'112/70',rr:14,risk:12,riskLevel:'info',stress:0.08,posture:{current:'right_lateral',duration_min:15,reposition_status:'ok',remaining_min:75},alerts:[],alertCount:0,history:{},pressureZones:{},profile:{age:61,bmi:25.0,is_elderly:false,is_diabetic:false},movement:0.45,consciousness:'responsive',nurse:'Nurse Oh',doctor:'Dr. Lim',meds:['Aspirin 81mg PO daily','Metoprolol 25mg PO BID','Lisinopril 10mg PO daily','Enoxaparin 40mg SC daily'],labs:demoLabs.concat([{test:'Coagulation',time:'-8h',pt:'12.5',inr:'1.1',aptt:'28',status:'normal'}]),allergies:['NKDA'],surgHist:['C-section (2017)']},
+    {id:'PID-2404',nm:'Robert Chen',ini:'RC',rm:'ICU-209',sg:'Appendectomy',dy:1,st:'stable',hr:76,tp:36.7,sp:97,hv:38,bp:'122/78',rr:15,risk:15,riskLevel:'info',stress:0.15,posture:{current:'supine',duration_min:25,reposition_status:'ok',remaining_min:65},alerts:[],alertCount:0,history:{},pressureZones:{},profile:{age:34,bmi:22.1,is_elderly:false,is_diabetic:false},movement:0.5,consciousness:'responsive',nurse:'Nurse Yoon',doctor:'Dr. Cho',meds:demoMeds.slice(0,3),labs:demoLabs,allergies:['NKDA'],surgHist:[]},
+    {id:'PID-2409',nm:'Emma Rodriguez',ini:'ER',rm:'ICU-205',sg:'Hysterectomy',dy:3,st:'stable',hr:66,tp:36.4,sp:99,hv:50,bp:'108/68',rr:13,risk:10,riskLevel:'info',stress:0.06,posture:{current:'left_lateral',duration_min:10,reposition_status:'ok',remaining_min:80},alerts:[],alertCount:0,history:{},pressureZones:{},profile:{age:48,bmi:24.2,is_elderly:false,is_diabetic:false},movement:0.5,consciousness:'responsive',nurse:'Nurse Hwang',doctor:'Dr. Kang',meds:demoMeds.slice(2,5),labs:demoLabs,allergies:['Codeine (nausea)'],surgHist:['C-section (2017)','Dental extraction (2021)']},
+    {id:'PID-2410',nm:'Thomas Wright',ini:'TW',rm:'ICU-208',sg:'Colectomy',dy:1,st:'stable',hr:74,tp:36.9,sp:97,hv:40,bp:'120/74',rr:16,risk:16,riskLevel:'info',stress:0.14,posture:{current:'supine',duration_min:30,reposition_status:'ok',remaining_min:60},alerts:[],alertCount:0,history:{},pressureZones:{},profile:{age:58,bmi:25.8,is_elderly:false,is_diabetic:false},movement:0.35,consciousness:'responsive',nurse:'Nurse Kim',doctor:'Dr. Han',meds:demoMeds,labs:demoLabs,allergies:['NKDA'],surgHist:['Hernia repair (2015)']},
+    {id:'PID-2411',nm:'Olivia Nakamura',ini:'ON',rm:'ICU-210',sg:'Thoracotomy',dy:5,st:'stable',hr:64,tp:36.3,sp:98,hv:52,bp:'110/66',rr:13,risk:8,riskLevel:'info',stress:0.05,posture:{current:'supine',duration_min:5,reposition_status:'ok',remaining_min:85},alerts:[],alertCount:0,history:{},pressureZones:{},profile:{age:45,bmi:21.5,is_elderly:false,is_diabetic:false},movement:0.55,consciousness:'responsive',nurse:'Nurse Park',doctor:'Dr. Yoon',meds:demoMeds.slice(0,3),labs:demoLabs,allergies:['NKDA'],surgHist:['Knee arthroscopy (2019)']},
+    {id:'PID-2412',nm:'Michael Brown',ini:'MB',rm:'ICU-212',sg:'ACL Repair',dy:1,st:'stable',hr:78,tp:36.8,sp:97,hv:36,bp:'124/80',rr:16,risk:14,riskLevel:'info',stress:0.1,posture:{current:'supine',duration_min:18,reposition_status:'ok',remaining_min:72},alerts:[],alertCount:0,history:{},pressureZones:{},profile:{age:28,bmi:23.8,is_elderly:false,is_diabetic:false},movement:0.42,consciousness:'responsive',nurse:'Nurse Lee',doctor:'Dr. Shin',meds:demoMeds.slice(0,4),labs:demoLabs,allergies:['NKDA'],surgHist:[]},
+    {id:'PID-2413',nm:'Sophia Lee',ini:'SL',rm:'ICU-213',sg:'Mastectomy',dy:2,st:'stable',hr:71,tp:36.6,sp:98,hv:44,bp:'116/74',rr:15,risk:11,riskLevel:'info',stress:0.07,posture:{current:'right_lateral',duration_min:12,reposition_status:'ok',remaining_min:78},alerts:[],alertCount:0,history:{},pressureZones:{},profile:{age:56,bmi:24.0,is_elderly:false,is_diabetic:false},movement:0.48,consciousness:'responsive',nurse:'Nurse Choi',doctor:'Dr. Kwon',meds:demoMeds.slice(1,4),labs:demoLabs,allergies:['Latex (contact dermatitis)'],surgHist:['Dental extraction (2021)']}
+  ];
+
+  render();
+  document.getElementById('pCount').textContent = P.length;
+
+  // Demo: simulate live updates in fallback mode
+  setInterval(function(){
+    P.forEach(function(p){
+      p.hr = Math.round(p.hr + (Math.random()-.5)*3);
+      p.tp = +(p.tp + (Math.random()-.5)*.1).toFixed(1);
+      p.sp = Math.min(100, Math.max(85, Math.round(p.sp + (Math.random()-.5)*1)));
+    });
+    render();
+    if (curP && ov.classList.contains('on')) {
+      var u = P.find(function(p){return p.id===curP.id});
+      if(u){curP=u; updateDetailPanel(u);}
+    }
+  }, 3000);
+}
+
+// =============================================
+// GRID RENDERING
+// =============================================
+var grid=document.getElementById('grid');
+function vc(v,l,h){return v>=l&&v<=h?'ok':(v<l*.9||v>h*1.1)?'bd':'wn';}
+function render(f){
+  f=f||document.getElementById('sb').value||'';
+  var q=f.toLowerCase();
+  var total=P.length, stable=0, caution=0, critical=0;
+  P.forEach(function(p){if(p.st==='stable')stable++;else if(p.st==='caution')caution++;else if(p.st==='critical')critical++;});
+  document.getElementById('sTotal').textContent=total;
+  document.getElementById('sStable').textContent=stable;
+  document.getElementById('sCaution').textContent=caution;
+  document.getElementById('sCritical').textContent=critical;
+  grid.innerHTML=P.filter(function(p){
+    return p.nm.toLowerCase().includes(q)||p.id.toLowerCase().includes(q)
+  }).sort(function(a,b){return b.risk-a.risk}).map(function(p){
+    var pos=p.posture||{};
+    var posName=pos.current||'supine';
+    var posDur=(pos.duration_min||0).toFixed(0);
+    var posColor=pos.reposition_status==='overdue'?'var(--red)':pos.reposition_status==='warning'?'var(--amb)':'var(--t3)';
+    var isExp=p.id.indexOf('EXP')===0;
+    var expStyle=isExp?'border:1.5px solid var(--acc);box-shadow:0 0 12px rgba(74,125,255,0.25);':'';
+    var expLabel=isExp?'<span style="background:var(--acc);color:#fff;font-size:8px;padding:1px 5px;border-radius:6px;margin-left:6px;vertical-align:middle">EXP</span>':'';
+    return '<div class="pc" data-id="'+p.id+'" style="'+expStyle+'"><div class="pcT"><div class="av">'+p.ini+'</div><div class="sd '+p.st+'"></div></div><div class="pcN">'+p.nm+expLabel+'</div><div class="pcI">'+p.id+' &middot; Risk: <strong style="color:'+(p.risk>55?'var(--red)':p.risk>20?'var(--amb)':'var(--grn)')+'">'+Math.round(p.risk)+'</strong></div><div class="pcV"><div><div class="pvL">HR</div><div class="pvV '+vc(p.hr,60,90)+'">'+p.hr+'</div></div><div><div class="pvL">Temp</div><div class="pvV '+vc(p.tp,36,37.5)+'">'+p.tp+'\u00B0</div></div><div><div class="pvL">SpO2</div><div class="pvV '+vc(p.sp,95,100)+'">'+p.sp+'%</div></div><div><div class="pvL">RR</div><div class="pvV '+vc(p.rr,12,20)+'">'+p.rr+'</div></div></div><div class="pcB"><span>'+p.rm+'</span><span style="color:var(--acc)">'+p.doctor+'</span><span style="color:'+posColor+';font-weight:500">'+posName.replace('_',' ')+' '+posDur+'m</span></div></div>';
+  }).join('');
+  grid.querySelectorAll('.pc').forEach(function(c){c.onclick=function(){openD(c.dataset.id)}});
+}
+document.getElementById('sb').oninput=function(e){render(e.target.value)};
+
+function tk(){document.getElementById('clk').textContent=new Date().toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+setInterval(tk,1e3);tk();
+
+// =============================================
+// DETAIL PANEL
+// =============================================
+var ov=document.getElementById('ov');
+document.getElementById('xb').onclick=closeD;
+ov.onclick=function(e){if(e.target===ov)closeD()};
+var ch={},t3=null,liveInt=null,curP=null;
+
+function closeD(){
+  ov.classList.remove('on');
+  Object.values(ch).forEach(function(c){c.destroy()});
+  ch={};
+  if(t3){t3();t3=null;}
+  if(liveInt){clearInterval(liveInt);liveInt=null;}
+}
+
+function openD(id){
+  var p=P.find(function(x){return x.id===id});
+  if(!p)return;
+  closeD();
+  curP=p;
+
+  // Request full detail from server if connected
+  if(wsConnected && wsConn){
+    wsConn.send(JSON.stringify({action:'get_patient',id:id}));
+  }
+
+  updateDetailPanel(p);
+  ov.classList.add('on');
+  setTimeout(function(){
+    mkC(p);
+    // Wait for tbox to have real dimensions before init 3D
+    var tbox = document.getElementById('tbox');
+    if (tbox && tbox.clientWidth > 10 && tbox.clientHeight > 10) {
+      mk3D(p);
+    } else {
+      // Use ResizeObserver to wait for layout
+      var ro = new ResizeObserver(function(entries) {
+        for (var e of entries) {
+          if (e.contentRect.width > 10 && e.contentRect.height > 10) {
+            ro.disconnect();
+            mk3D(p);
+            break;
+          }
+        }
+      });
+      if (tbox) ro.observe(tbox);
+      // Fallback timeout
+      setTimeout(function(){ if(tbox && !tbox.querySelector('canvas')) mk3D(p); }, 500);
+    }
+  }, 150);
+}
+
+function updateDetailPanel(p) {
+  document.getElementById('dA').textContent=p.ini;
+  document.getElementById('dN').textContent=p.nm;
+  document.getElementById('dI').textContent=p.id;
+  document.getElementById('dR').textContent=p.rm;
+  document.getElementById('dS').textContent=p.sg;
+  document.getElementById('dD').textContent=p.dy;
+  document.getElementById('dDoc').textContent=p.doctor||'—';
+  document.getElementById('dNrs').textContent=p.nurse||'—';
+
+  // Risk Badge
+  var rb=document.getElementById('riskBadge');
+  var rv=document.getElementById('riskVal');
+  rv.textContent=Math.round(p.risk);
+  var rlbl=p.riskLevel==='critical'?'CRITICAL':p.riskLevel==='warning'?'WARNING':p.riskLevel==='caution'?'CAUTION':'STABLE';
+  var rclr=p.risk>55?'var(--red)':p.risk>20?'var(--amb)':'var(--grn)';
+  rb.textContent=rlbl;
+  rb.style.background=rclr;
+  rb.style.color='#fff';
+  rv.style.color=rclr;
+
+  // Patient Profile Grid
+  var prof=p.profile||{};
+  var pg=document.getElementById('profileGrid');
+  var pItems=[
+    ['Age',prof.age||'—'],['BMI',(prof.bmi||'—')],
+    ['Diabetic',prof.is_diabetic?'Yes':'No'],['Cardiac Risk',prof.has_cardiovascular_risk?'Yes':'No'],
+    ['Consciousness',p.consciousness||'responsive'],['Mobility',prof.mobility_level||'—']
+  ];
+  pg.innerHTML=pItems.map(function(x){
+    var clr=(x[1]==='Yes'||x[1]==='reduced')?'var(--amb)':'var(--t2)';
+    return '<div><span style="color:var(--t4);font-size:10px">'+x[0]+'</span><br><span style="font-weight:600;color:'+clr+'">'+x[1]+'</span></div>';
+  }).join('');
+
+  // Medications
+  var ml=document.getElementById('medsList');
+  ml.innerHTML=(p.meds||[]).map(function(m){
+    return '<div style="padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.04)">'+m+'</div>';
+  }).join('')||'<span style="color:var(--t4)">None listed</span>';
+
+  // Allergies
+  var al2=document.getElementById('allergyList');
+  al2.innerHTML=(p.allergies||[]).map(function(a){
+    var isNKDA=a==='NKDA';
+    return '<span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;margin:1px 2px;'+(isNKDA?'background:rgba(45,212,160,0.15);color:var(--grn)':'background:rgba(240,80,80,0.15);color:var(--red)')+'">'+a+'</span>';
+  }).join('')||'<span style="color:var(--t4)">NKDA</span>';
+
+  // Lab Results
+  var ll=document.getElementById('labList');
+  ll.innerHTML=(p.labs||[]).map(function(lb){
+    var clr=lb.status&&lb.status.indexOf('normal')>=0?'var(--grn)':'var(--amb)';
+    return '<div style="padding:2px 0;font-size:10px"><span style="font-weight:600">'+lb.test+'</span> <span style="color:var(--t4)">('+lb.time+')</span> <span style="color:'+clr+';font-size:9px">'+lb.status+'</span></div>';
+  }).join('')||'<span style="color:var(--t4)">No results</span>';
+
+  // Vital Sign Charts
+  var hist = p.history || {};
+  function sparkline(canvasId, data, color, min, max) {
+    var c = document.getElementById(canvasId);
+    if (!c || !data || data.length < 2) return;
+    var ctx = c.getContext('2d');
+    var W = c.parentElement.clientWidth - 24;
+    c.width = W; c.height = 60;
+    ctx.clearRect(0, 0, W, 60);
+    var range = max - min || 1;
+    var pts = data.slice(-40);
+    var step = W / (pts.length - 1);
+    // Fill gradient
+    ctx.beginPath();
+    ctx.moveTo(0, 60);
+    for (var i = 0; i < pts.length; i++) {
+      var x = i * step;
+      var y = 60 - ((pts[i] - min) / range) * 52 - 4;
+      if (i === 0) ctx.lineTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.lineTo(W, 60);
+    ctx.closePath();
+    var grd = ctx.createLinearGradient(0, 0, 0, 60);
+    grd.addColorStop(0, color.replace(')', ',0.25)').replace('rgb', 'rgba'));
+    grd.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = grd;
+    ctx.fill();
+    // Line
+    ctx.beginPath();
+    for (var i = 0; i < pts.length; i++) {
+      var x = i * step;
+      var y = 60 - ((pts[i] - min) / range) * 52 - 4;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+    // End dot
+    var lx = (pts.length-1)*step, ly = 60 - ((pts[pts.length-1]-min)/range)*52 - 4;
+    ctx.beginPath();
+    ctx.arc(lx, ly, 3, 0, Math.PI*2);
+    ctx.fillStyle = color;
+    ctx.fill();
+  }
+  var hrC = p.hr>=60&&p.hr<=90?'rgb(45,212,160)':p.hr>100?'rgb(240,80,80)':'rgb(245,158,66)';
+  var tpC = p.tp>=36&&p.tp<=37.5?'rgb(45,212,160)':p.tp>38?'rgb(240,80,80)':'rgb(245,158,66)';
+  var spC = p.sp>=95?'rgb(45,212,160)':p.sp>=90?'rgb(245,158,66)':'rgb(240,80,80)';
+  var rkC = p.risk>55?'rgb(240,80,80)':p.risk>20?'rgb(245,158,66)':'rgb(45,212,160)';
+  document.getElementById('cvHR').textContent = p.hr;
+  document.getElementById('cvHR').style.color = hrC;
+  document.getElementById('cvTemp').textContent = p.tp;
+  document.getElementById('cvTemp').style.color = tpC;
+  document.getElementById('cvSpO2').textContent = p.sp;
+  document.getElementById('cvSpO2').style.color = spC;
+  document.getElementById('cvRisk').textContent = Math.round(p.risk);
+  document.getElementById('cvRisk').style.color = rkC;
+  sparkline('cHR', hist.heart_rate, hrC, 55, 140);
+  sparkline('cTemp', hist.body_temp, tpC, 36, 40);
+  sparkline('cSpO2', hist.spo2, spC, 80, 100);
+  sparkline('cRisk', hist.risk_score, rkC, 0, 80);
+
+  // Report
+  document.getElementById('rpt').innerHTML=genRpt(p);
+  document.getElementById('al').innerHTML=genLog(p);
+
+  // Posture tags
+  var pos=p.posture||{};
+  var prs=document.querySelectorAll('.pr .pt');
+  if(prs.length>=3){
+    prs[0].textContent=(pos.current||'supine').replace('_',' ');
+    prs[0].className='pt'+(pos.reposition_status==='overdue'?' bd':pos.reposition_status==='warning'?' wr':' ac');
+    prs[1].textContent='Duration: '+(pos.duration_min||0).toFixed(0)+' min';
+    var rem=pos.remaining_min||0;
+    prs[2].textContent=rem>0?'Reposition in '+rem.toFixed(0)+' min':'OVERDUE — Reposition now';
+    prs[2].className='pt'+(rem<=0?' bd':rem<20?' wr':'');
+  }
+
+  // Smooth 3D posture update
+  var newPosture = (pos.current || 'supine');
+  if (window._vgWrapper) {
+    if (newPosture === 'left_lateral') {
+      window._vgTargetRotZ = 0.7;
+      window._vgTargetPosX = -0.08;
+    } else if (newPosture === 'right_lateral') {
+      window._vgTargetRotZ = -0.7;
+      window._vgTargetPosX = 0.08;
+    } else {
+      window._vgTargetRotZ = 0;
+      window._vgTargetPosX = 0;
+    }
+  }
+
+  // Pressure heatmap
+  var pzGrid=document.getElementById('pzGrid');
+  if(pzGrid){
+    var zones=p.pressureZones||{};
+    var zoneNames=['head','shoulder_L','shoulder_R','upper_back','mid_back','lower_back','sacrum','hip_L','hip_R','thigh_L','thigh_R','heel'];
+    var zoneLabels=['Head','Sh-L','Sh-R','Up-Bk','Mid-Bk','Lo-Bk','Sacrum','Hip-L','Hip-R','Th-L','Th-R','Heel'];
+    pzGrid.innerHTML=zoneNames.map(function(z,i){
+      var zd=zones[z]||{};
+      var score=zd.risk_score||zd.pressure||0;
+      var r=Math.min(255,Math.round(score*255*2.5));
+      var g=Math.min(255,Math.round((1-score)*255*1.5));
+      var bg='rgba('+r+','+g+',60,0.8)';
+      if(score<0.1) bg='rgba(45,212,160,0.3)';
+      return '<div style="text-align:center;padding:6px 2px;border-radius:6px;background:'+bg+';font-size:9px;color:#fff;font-weight:500;min-height:28px;display:flex;align-items:center;justify-content:center;flex-direction:column"><span>'+zoneLabels[i]+'</span><span style="font-size:10px;font-weight:700">'+Math.round(score*100)+'</span></div>';
+    }).join('');
+  }
+}
+
+// =============================================
+// REPORT GENERATION (enhanced with risk data)
+// =============================================
+function genRpt(p){
+  var ts=new Date().toLocaleString('en-US',{month:'long',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  var prof=p.profile||{};
+  var pos=p.posture||{};
+  var sum,vit,pres,mov,rc;
+
+  if(p.st==='critical'){
+    sum='Patient <strong>'+p.nm+'</strong> ('+p.id+') is in <span class="tbd">CRITICAL condition</span> with risk score <strong>'+Math.round(p.risk)+'/100</strong>. Post-op day '+p.dy+' following '+p.sg+'. '+(prof.is_elderly?'Elderly patient ('+prof.age+'). ':'')+(prof.is_diabetic?'Diabetic — elevated pressure risk. ':'')+'Stress level: <span class="tbd">'+Math.round(p.stress*100)+'%</span>. Consciousness: <strong>'+p.consciousness+'</strong>. Immediate physician assessment required.';
+    vit='<strong>Cardiovascular:</strong> HR <span class="tbd">'+p.hr+' bpm</span>, HRV <span class="tbd">'+p.hv+' ms</span>. Tachycardia with reduced variability indicates autonomic stress.<br><br><strong>Respiratory:</strong> SpO2 <span class="tbd">'+p.sp+'%</span>, RR <span class="twn">'+p.rr+'/min</span>. Hypoxemia concern — possible atelectasis or PE.<br><br><strong>Thermoregulation:</strong> Temp <span class="tbd">'+p.tp+'\u00B0C</span>. '+(p.tp>38?'Fever — evaluate for SSI, UTI, or sepsis.':'Trending above normal.');
+    pres='Position: <strong>'+(pos.current||'supine')+'</strong> for <strong>'+(pos.duration_min||0).toFixed(0)+' min</strong>. '+(pos.reposition_status==='overdue'?'<span class="tbd">OVERDUE for repositioning.</span> Sacral and heel zones at elevated risk.':'Next reposition in '+(pos.remaining_min||0).toFixed(0)+' min.');
+    mov='Movement index: <strong>'+Math.round(p.movement*100)+'%</strong> of baseline. '+(p.movement<0.15?'Minimal voluntary movement detected.':'Reduced movement pattern.');
+    rc=['Immediate physician eval for elevated risk triad','Stat blood cultures, CBC, CRP, procalcitonin if febrile','Supplemental O\u2082 targeting SpO2 96\u201399%','Immediate reposition — pressure buildup detected','Continuous telemetry, 15-min nursing checks','Review analgesic protocol','Notify surgical team for wound inspection','DVT prophylaxis review'];
+  } else if(p.st==='caution'){
+    sum='Patient <strong>'+p.nm+'</strong> ('+p.id+') under <span class="twn">CAUTION</span> with risk score <strong>'+Math.round(p.risk)+'/100</strong>. Day '+p.dy+' post '+p.sg+'. '+(prof.is_elderly?'Elderly. ':'')+(prof.is_diabetic?'Diabetic. ':'')+'Stress: '+Math.round(p.stress*100)+'%.';
+    vit='<strong>Cardiovascular:</strong> HR <span class="twn">'+p.hr+' bpm</span>, HRV <span class="twn">'+p.hv+' ms</span>.<br><br><strong>Respiratory:</strong> SpO2 <span class="twn">'+p.sp+'%</span>, RR '+p.rr+'/min.<br><br><strong>Thermoregulation:</strong> Temp <span class="twn">'+p.tp+'\u00B0C</span>. Monitor for upward trend.';
+    pres='Position: '+(pos.current||'supine')+' for '+(pos.duration_min||0).toFixed(0)+' min. '+(pos.reposition_status==='warning'?'Approaching reposition window.':'Compliance on track.');
+    mov='Movement index: '+Math.round(p.movement*100)+'% baseline.';
+    rc=['Enhanced vitals monitoring every 30 min','Fever workup if temp exceeds 38.0\u00B0C','Incentive spirometry q2h','Review pain management','90-min repositioning schedule','Monitor fluid balance'];
+  } else {
+    sum='Patient <strong>'+p.nm+'</strong> ('+p.id+') in <span class="tok">STABLE condition</span>. Risk score <strong>'+Math.round(p.risk)+'/100</strong>. Day '+p.dy+' post '+p.sg+'.';
+    vit='<strong>Cardiovascular:</strong> HR <span class="tok">'+p.hr+' bpm</span>, HRV <span class="tok">'+p.hv+' ms</span>.<br><br><strong>Respiratory:</strong> SpO2 <span class="tok">'+p.sp+'%</span>, RR '+p.rr+'/min.<br><br><strong>Thermoregulation:</strong> Temp <span class="tok">'+p.tp+'\u00B0C</span>. Normal range.';
+    pres='All pressure zones normal. Repositioning compliant.';
+    mov='Movement index: '+Math.round(p.movement*100)+'% baseline. Adequate.';
+    rc=['Routine monitoring every 60 min','Maintain medication regimen','Encourage early mobilization','Standard 90-min repositioning','Continue day '+p.dy+' pathway','Consider advancing diet/activity'];
+  }
+
+  // Care Team section
+  var team='<div style="display:flex;gap:20px;flex-wrap:wrap">'+
+    '<div style="flex:1;min-width:140px"><div class="pvL">Attending Physician</div><div style="color:var(--acc);font-weight:600;margin-top:2px">'+p.doctor+'</div></div>'+
+    '<div style="flex:1;min-width:140px"><div class="pvL">Assigned Nurse</div><div style="color:var(--grn);font-weight:600;margin-top:2px">'+p.nurse+'</div></div>'+
+    '<div style="flex:1;min-width:140px"><div class="pvL">BMI</div><div style="color:var(--t1);font-weight:600;margin-top:2px">'+(prof.bmi||'—')+'</div></div>'+
+    '<div style="flex:1;min-width:140px"><div class="pvL">Allergies</div><div style="color:'+(p.allergies[0]==='NKDA'?'var(--t3)':'var(--red)')+';font-weight:600;margin-top:2px">'+(p.allergies[0]||'NKDA')+'</div></div>'+
+    '</div>';
+
+  // Medications section
+  var medsHtml='';
+  if(p.meds && p.meds.length>0){
+    medsHtml=p.meds.map(function(m){
+      return '<div style="padding:6px 10px;margin:3px 0;background:rgba(74,125,255,.04);border-radius:6px;border-left:2px solid var(--acc);font-size:12px;color:var(--t2)">'+m+'</div>';
+    }).join('');
+  } else {
+    medsHtml='<div style="color:var(--t3)">No active medications</div>';
+  }
+
+  // Lab Results section
+  var labsHtml='';
+  if(p.labs && p.labs.length>0){
+    labsHtml='<table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:6px">';
+    labsHtml+='<tr style="border-bottom:1px solid var(--border)"><th style="text-align:left;padding:4px 8px;color:var(--t3)">Test</th><th style="text-align:left;padding:4px 8px;color:var(--t3)">Time</th><th style="text-align:left;padding:4px 8px;color:var(--t3)">Results</th><th style="text-align:right;padding:4px 8px;color:var(--t3)">Status</th></tr>';
+    p.labs.forEach(function(lb){
+      var stColor = lb.status==='normal'?'var(--grn)':'var(--amb)';
+      var vals = '';
+      if(lb.test==='CBC') vals='WBC: '+lb.wbc+' | Hgb: '+lb.hgb+' | Plt: '+lb.plt;
+      else if(lb.test==='BMP') vals='Na: '+lb.na+' | K: '+lb.k+' | Cr: '+lb.cr+' | Glu: '+lb.glucose;
+      else if(lb.value) vals=lb.value+' '+(lb.unit||'');
+      else if(lb.pt) vals='PT: '+lb.pt+' | INR: '+lb.inr+' | aPTT: '+lb.aptt;
+      labsHtml+='<tr style="border-bottom:1px solid rgba(30,33,48,.5)"><td style="padding:6px 8px;color:var(--t1);font-weight:500">'+lb.test+'</td><td style="padding:6px 8px;color:var(--t3)">'+lb.time+'</td><td style="padding:6px 8px;color:var(--t2)">'+vals+'</td><td style="padding:6px 8px;text-align:right;color:'+stColor+';font-weight:500">'+lb.status+'</td></tr>';
+    });
+    labsHtml+='</table>';
+  } else {
+    labsHtml='<div style="color:var(--t3)">No recent lab results</div>';
+  }
+
+  // Surgical History
+  var histHtml='';
+  if(p.surgHist && p.surgHist.length>0){
+    histHtml=p.surgHist.map(function(h){return '<span style="display:inline-block;padding:3px 10px;margin:2px 4px 2px 0;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:20px;font-size:11px;color:var(--t2)">'+h+'</span>';}).join('');
+  } else {
+    histHtml='<span style="color:var(--t3);font-size:12px">No prior surgical history</span>';
+  }
+
+  return '<div class="rH"><div class="rT"><div class="rb"></div>Clinical Status Report</div><div class="rTs">'+ts+'</div></div><div class="rB">'+
+    '<p>'+sum+'</p>'+
+    '<div class="rS"><h4>Vital Signs Analysis</h4><p>'+vit+'</p></div>'+
+    '<div class="rS"><h4>Pressure & Position</h4><p>'+pres+'</p></div>'+
+    '<div class="rS"><h4>Movement & Activity</h4><p>'+mov+'</p></div></div>';
+}
+
+function genLog(p){
+  var a=[];
+  // Use real alerts if available
+  if(p.alerts && p.alerts.length>0){
+    p.alerts.slice(0,5).forEach(function(al){
+      a.push({t:new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),x:al,c:p.st==='critical'?'critical':'warning'});
+    });
+  }
+  a.push({t:'08:12',x:'Vitals recorded',c:'success'});
+  a.push({t:'06:30',x:'Medication administered',c:'info'});
+  a.push({t:'04:45',x:'Repositioned',c:'info'});
+  a.push({t:'03:00',x:'Fluid intake: 200ml',c:'info'});
+  return a.map(function(i){return '<div class="li '+i.c+'"><span class="lt">'+i.t+'</span><span class="lx">'+i.x+'</span></div>'}).join('');
+}
+
+// =============================================
+// CHARTS — sparkline (no Chart.js needed)
+// =============================================
+function mkC(p){}
+</script>
+<script>
+function mk3D(patientData){
+console.log('[mk3D] Starting...');
+var stressLevel = (patientData && patientData.stress) || 0;
+if(t3)t3();
+var box=document.getElementById('tbox');
+if(!box){console.error('[mk3D] tbox not found!');return;}
+box.innerHTML='';
+var W=box.clientWidth||box.offsetWidth||600,H=box.clientHeight||box.offsetHeight||280;
+if(W<10)W=600;if(H<10)H=280;
+console.log('[mk3D] Box size:',W,'x',H);
+var scene=new THREE.Scene();
+scene.background=new THREE.Color(0x0b0d12);
+var camera=new THREE.PerspectiveCamera(36,W/H,.1,100);
+var rnd=new THREE.WebGLRenderer({antialias:true,alpha:false});
+rnd.setSize(W,H);rnd.setPixelRatio(Math.min(devicePixelRatio,2));
+rnd.shadowMap.enabled=true;rnd.shadowMap.type=THREE.PCFSoftShadowMap;
+rnd.toneMapping=THREE.ACESFilmicToneMapping;rnd.toneMappingExposure=.9;
+box.appendChild(rnd.domElement);
+console.log('[mk3D] Renderer appended, canvas:', rnd.domElement.width, 'x', rnd.domElement.height);
+// Re-measure after append in case layout shifted
+var rW=box.clientWidth,rH=box.clientHeight;
+if(rW>10&&rH>10&&(rW!==W||rH!==H)){W=rW;H=rH;rnd.setSize(W,H);camera.aspect=W/H;camera.updateProjectionMatrix();}
+
+scene.add(new THREE.AmbientLight(0x2a3050,.5));
+var keyL=new THREE.DirectionalLight(0x8899cc,.8);keyL.position.set(5,8,5);keyL.castShadow=true;keyL.shadow.mapSize.set(2048,2048);scene.add(keyL);
+scene.add(new THREE.DirectionalLight(0x445570,.3).translateX(-4).translateY(5).translateZ(-3));
+scene.add(new THREE.PointLight(0x4a7dff,.3,10).translateX(-2).translateY(3).translateZ(4));
+
+var gnd=new THREE.Mesh(new THREE.PlaneGeometry(20,20),new THREE.MeshStandardMaterial({color:0x0e1018,roughness:1}));
+gnd.rotation.x=-Math.PI/2;gnd.receiveShadow=true;scene.add(gnd);
+scene.add(new THREE.GridHelper(12,24,0x181c28,0x12151e));
+
+// Skin color shifts with stress: normal peach -> flushed red
+var skinR = 0.83 + stressLevel * 0.12;
+var skinG = 0.66 - stressLevel * 0.2;
+var skinB = 0.55 - stressLevel * 0.25;
+var skin=new THREE.MeshStandardMaterial({color:new THREE.Color(skinR,skinG,skinB),roughness:.45,metalness:.02});
+var jnt=new THREE.MeshStandardMaterial({color:0xc99878,roughness:.5,metalness:.02});
+var bedMt=new THREE.MeshStandardMaterial({color:0x181c2a,roughness:.85});
+var matMt=new THREE.MeshStandardMaterial({color:0x1e2235,roughness:.75});
+var pillMt=new THREE.MeshStandardMaterial({color:0xc8c8c8,roughness:.9});
+var senMt=new THREE.MeshStandardMaterial({color:0x4a7dff,emissive:0x4a7dff,emissiveIntensity:.2});
+var wbMt=new THREE.MeshStandardMaterial({color:0xf05050,emissive:0xf05050,emissiveIntensity:.15});
+
+function mm(g,m,p,s){var o=new THREE.Mesh(g,m);o.position.set(p[0],p[1],p[2]);if(s)o.castShadow=true;return o;}
+
+// BED
+var bed=new THREE.Group();
+bed.add(mm(new THREE.BoxGeometry(2.4,.1,3.8),bedMt,[0,.28,0]));
+[[-1.1,.14,-1.8],[1.1,.14,-1.8],[-1.1,.14,1.8],[1.1,.14,1.8]].forEach(function(p){bed.add(mm(new THREE.CylinderGeometry(.04,.04,.28,8),bedMt,p))});
+bed.add(mm(new THREE.BoxGeometry(2.4,.4,.06),bedMt,[0,.48,1.88]));
+bed.add(mm(new THREE.BoxGeometry(.03,.18,2.6),bedMt,[-1.17,.46,0]));
+bed.add(mm(new THREE.BoxGeometry(.03,.18,2.6),bedMt,[1.17,.46,0]));
+bed.add(mm(new THREE.BoxGeometry(2.2,.12,3.5),matMt,[0,.39,0],true));
+bed.add(mm(new THREE.BoxGeometry(.65,.1,.35),pillMt,[0,.5,1.38]));
+scene.add(bed);
+
+var sdots=[];
+for(var r=0;r<4;r++)for(var c=0;c<3;c++){var s=mm(new THREE.SphereGeometry(.016,8,8),senMt.clone(),[-.6+c*.6,.46,-1.2+r*.8]);scene.add(s);sdots.push(s);}
+
+// MANNEQUIN — smooth, dense spheres, static positions
+var body=new THREE.Group();
+
+// Helper: dense limb
+function limb(s,e,r1,r2,mat,n,sh){
+  n=n||12;
+  var g=new THREE.Group();
+  for(var i=0;i<=n;i++){
+    var t=i/n;
+    var sp=new THREE.Mesh(new THREE.SphereGeometry(r1+(r2-r1)*t,16,16),mat);
+    sp.position.set(s[0]+(e[0]-s[0])*t,s[1]+(e[1]-s[1])*t,s[2]+(e[2]-s[2])*t);
+    if(sh)sp.castShadow=true;
+    g.add(sp);
+  }
+  return g;
+}
+
+// HEAD
+var hd=mm(new THREE.SphereGeometry(.155,32,32),skin,[0,.7,1.22],true);
+hd.scale.set(1,1.15,1.05);body.add(hd);
+body.add(mm(new THREE.SphereGeometry(.028,12,12),skin,[.155,.68,1.22]));
+body.add(mm(new THREE.SphereGeometry(.028,12,12),skin,[-.155,.68,1.22]));
+body.add(mm(new THREE.SphereGeometry(.018,10,10),skin,[0,.67,1.08]));
+var eyM=new THREE.MeshStandardMaterial({color:0x8a7060,roughness:.8});
+body.add(mm(new THREE.SphereGeometry(.014,8,8),eyM,[.048,.71,1.1]));
+body.add(mm(new THREE.SphereGeometry(.014,8,8),eyM,[-.048,.71,1.1]));
+
+// NECK
+body.add(limb([0,.62,1.15],[0,.57,1.05],.055,.06,skin,6));
+
+// TORSO — very dense, 20+ spheres, overlapping for smooth look
+var torsoG=new THREE.Group();
+for(var i=0;i<22;i++){
+  var t=i/21;
+  var z=1.0-t*1.28;
+  var w;
+  if(t<.1)w=.27;else if(t<.25)w=.30;else if(t<.45)w=.31;
+  else if(t<.6)w=.29;else if(t<.75)w=.27;else if(t<.88)w=.25;else w=.22;
+  var sp=mm(new THREE.SphereGeometry(w,20,20),skin,[0,.56-t*.06,z],true);
+  sp.scale.y=.38;
+  torsoG.add(sp);
+}
+body.add(torsoG);
+
+// SHOULDERS
+body.add(mm(new THREE.SphereGeometry(.078,16,16),jnt,[.37,.57,.88]));
+body.add(mm(new THREE.SphereGeometry(.078,16,16),jnt,[-.37,.57,.88]));
+
+// LEFT ARM — dense
+body.add(limb([.42,.56,.78],[.5,.54,.42],.054,.046,skin,14,true));
+body.add(mm(new THREE.SphereGeometry(.042,14,14),jnt,[.5,.54,.42]));
+body.add(limb([.5,.54,.42],[.53,.52,.05],.04,.03,skin,14));
+body.add(mm(new THREE.SphereGeometry(.028,10,10),jnt,[.53,.52,.05]));
+body.add(mm(new THREE.SphereGeometry(.032,10,10),skin,[.54,.52,-.06]));
+for(var f=-1;f<=1;f++)body.add(limb([.54+f*.011,.52,-.08],[.54+f*.013,.52,-.16],.009,.006,skin,5));
+
+// RIGHT ARM
+body.add(limb([-.42,.56,.78],[-.5,.54,.42],.054,.046,skin,14,true));
+body.add(mm(new THREE.SphereGeometry(.042,14,14),jnt,[-.5,.54,.42]));
+body.add(limb([-.5,.54,.42],[-.53,.52,.05],.04,.03,skin,14));
+body.add(mm(new THREE.SphereGeometry(.028,10,10),jnt,[-.53,.52,.05]));
+body.add(mm(new THREE.CylinderGeometry(.038,.038,.024,16),wbMt,[-.52,.535,.08]));
+body.add(mm(new THREE.SphereGeometry(.032,10,10),skin,[-.54,.52,-.06]));
+for(var f=-1;f<=1;f++)body.add(limb([-.54+f*.011,.52,-.08],[-.54+f*.013,.52,-.16],.009,.006,skin,5));
+
+// LEFT LEG
+body.add(limb([.16,.52,-.22],[.15,.5,-.75],.088,.062,skin,16,true));
+body.add(mm(new THREE.SphereGeometry(.056,14,14),jnt,[.15,.5,-.75]));
+body.add(limb([.15,.5,-.75],[.15,.48,-1.32],.052,.036,skin,14));
+body.add(mm(new THREE.SphereGeometry(.032,10,10),jnt,[.15,.48,-1.32]));
+body.add(mm(new THREE.SphereGeometry(.038,10,10),skin,[.15,.47,-1.38]));
+body.add(mm(new THREE.SphereGeometry(.028,10,10),skin,[.15,.47,-1.46]));
+body.add(mm(new THREE.SphereGeometry(.02,8,8),skin,[.15,.47,-1.52]));
+
+// RIGHT LEG
+body.add(limb([-.16,.52,-.22],[-.15,.5,-.75],.088,.062,skin,16,true));
+body.add(mm(new THREE.SphereGeometry(.056,14,14),jnt,[-.15,.5,-.75]));
+body.add(limb([-.15,.5,-.75],[-.15,.48,-1.32],.052,.036,skin,14));
+body.add(mm(new THREE.SphereGeometry(.032,10,10),jnt,[-.15,.48,-1.32]));
+body.add(mm(new THREE.SphereGeometry(.038,10,10),skin,[-.15,.47,-1.38]));
+body.add(mm(new THREE.SphereGeometry(.028,10,10),skin,[-.15,.47,-1.46]));
+body.add(mm(new THREE.SphereGeometry(.02,8,8),skin,[-.15,.47,-1.52]));
+
+// POSTURE ROTATION
+// The body parts are positioned at y~0.5 (on mattress).
+// To rotate around the spine axis without breaking apart:
+// 1. Put body in a wrapper
+// 2. Offset body down so rotation center is at mattress level
+// 3. Rotate wrapper
+// 4. Push wrapper back up
+var posture = (patientData && patientData.posture && patientData.posture.current) || 'supine';
+var wrapper = new THREE.Group();
+
+// Shift body so center of rotation is at y=0.5 (mattress surface)
+// All body parts are at y~0.47-0.7, center ~0.55
+body.position.y = -0.55;
+wrapper.add(body);
+wrapper.position.y = 0.55;
+
+if (posture === 'left_lateral') {
+  wrapper.rotation.z = 0.7;   // ~40 deg tilt left
+  wrapper.position.x = -0.08;
+} else if (posture === 'right_lateral') {
+  wrapper.rotation.z = -0.7;
+  wrapper.position.x = 0.08;
+}
+
+scene.add(wrapper);
+
+// Store wrapper ref globally for live posture updates
+window._vgWrapper = wrapper;
+window._vgTargetRotZ = wrapper.rotation.z;
+window._vgTargetPosX = wrapper.position.x;
+
+// BREATHING
+var breathBaseY=torsoG.scale.y;
+
+// MOUSE DRAG
+var drag=false,px=0,py=0,rotY=.6,rotX=.35;
+box.onmousedown=function(e){drag=true;px=e.clientX;py=e.clientY};
+box.onmousemove=function(e){if(!drag)return;rotY+=(e.clientX-px)*.005;rotX+=(e.clientY-py)*.003;rotX=Math.max(-.1,Math.min(.9,rotX));px=e.clientX;py=e.clientY};
+box.onmouseup=function(){drag=false};box.onmouseleave=function(){drag=false};
+box.ontouchstart=function(e){drag=true;px=e.touches[0].clientX;py=e.touches[0].clientY};
+box.ontouchmove=function(e){if(!drag)return;rotY+=(e.touches[0].clientX-px)*.005;rotX+=(e.touches[0].clientY-py)*.003;rotX=Math.max(-.1,Math.min(.9,rotX));px=e.touches[0].clientX;py=e.touches[0].clientY};
+box.ontouchend=function(){drag=false};
+
+var aId,tt=0;
+function animate(){
+  aId=requestAnimationFrame(animate);
+  tt+=.015;
+  if(!drag)rotY+=.0004;
+  var D=5.5;
+  camera.position.x=D*Math.sin(rotY)*Math.cos(rotX);
+  camera.position.y=D*Math.sin(rotX)+1.2;
+  camera.position.z=D*Math.cos(rotY)*Math.cos(rotX);
+  camera.lookAt(0,.55,0);
+
+  // Smooth posture rotation (lerp)
+  if (window._vgWrapper) {
+    window._vgWrapper.rotation.z += (window._vgTargetRotZ - window._vgWrapper.rotation.z) * 0.03;
+    window._vgWrapper.position.x += (window._vgTargetPosX - window._vgWrapper.position.x) * 0.03;
+  }
+
+  // Breathing: scale torso group Y gently
+  torsoG.scale.y=1+Math.sin(tt*1.2)*.012;
+
+  // Sensor glow
+  sdots.forEach(function(s,i){s.material.emissiveIntensity=.1+Math.sin(tt*2+i*.4)*.12});
+  var pulseSpeed = 3.5 + stressLevel * 4; // faster pulse when stressed
+  wbMt.emissiveIntensity=.08+Math.abs(Math.sin(tt*pulseSpeed))*(.2+stressLevel*.3);
+  rnd.render(scene,camera);
+}
+animate();
+console.log('[mk3D] Animation started, scene children:', scene.children.length);
+t3=function(){cancelAnimationFrame(aId);rnd.dispose();box.innerHTML=''};
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+{
+    "last_update": 1771150391.487226,
+    "bed_esp1": {
+        "module": "bed_esp1",
+        "pressures": {
+            "head_left": 0,
+            "head_center": 0,
+            "head_right": 0,
+            "upper_back_left_shoulder": 0,
+            "upper_back_right_shoulder": 0,
+            "lower_back_left_hip": 0
+        },
+        "temperatures": {
+            "temp_1": 22.8125,
+            "temp_2": 22.875,
+            "temp_3": 22.6875
+        },
+        "mpu1": {
+            "accel_x": 1.357512,
+            "accel_y": -1.084573,
+            "accel_z": 9.464279,
+            "gyro_x": -0.104453,
+            "gyro_y": 0.025714,
+            "gyro_z": -0.181194
+        },
+        "mpu2": {
+            "accel_x": 1.127669,
+            "accel_y": -0.792481,
+            "accel_z": 9.552865,
+            "gyro_x": -0.035839,
+            "gyro_y": 0.039836,
+            "gyro_z": -0.01319
+        },
+        "timestamp_unified": 1771150391.487226,
+        "timestamp_esp": 1163318
+    },
+    "bed_esp2": {
+        "module": "bed_esp2",
+        "pressures": {
+            "lower_back_right_hip": 0,
+            "upper_leg_left_thigh": 0,
+            "upper_leg_right_thigh": 0,
+            "lower_leg_left_calf": 0,
+            "lower_leg_right_calf": 511,
+            "lower_back_center_spine": 0
+        },
+        "timestamp_unified": 1771150391.487226,
+        "timestamp_esp": 879323
+    },
+    "hand": {
+        "module": "hand",
+        "temperature": {
+            "raw": -39.22266,
+            "corrected": 27.77734,
+            "status": "ok"
+        },
+        "movement": {
+            "accel_x": -1.891419,
+            "accel_y": 1.640028,
+            "accel_z": 10.87207,
+            "gyro_x": -0.037571,
+            "gyro_y": 0.025847,
+            "gyro_z": -0.007994
+        },
+        "heart_rate": {
+            "ir": 0,
+            "red": 0,
+            "hand_detected": false
+        },
+        "timestamp_unified": 1771150391.487226,
+        "timestamp_esp": 2318428
+    },
+    "voice_latest": {
+        "id": 10,
+        "source": "voice",
+        "text": "Thank you for watching!",
+        "timestamp": 1771150391.5722454,
+        "timestamp_unified": 1771150391.487226
+    },
+    "last_update_readable": "2026-02-15T02:13:11.487226",
+    "radar": {
+        "distance_cm": 320,
+        "moving": false,
+        "presence": 146,
+        "stationary": false,
+        "timestamp": 1771150391.7544775,
+        "timestamp_unified": 1771150391.487226
+    }
+}

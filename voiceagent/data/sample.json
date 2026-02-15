@@ -1,0 +1,11 @@
+{
+    "utterances": [
+      { "t": 0.0, "speaker": "S1", "text": "Hi, I’m your nurse. What’s your pain from 0 to 10?" },
+      { "t": 2.2, "speaker": "S2", "text": "It’s a 7 when I move." },
+      { "t": 5.0, "speaker": "S1", "text": "Any nausea or shortness of breath?" },
+      { "t": 8.1, "speaker": "S2", "text": "A little nauseous, no breathing trouble." },
+      { "t": 30.0, "speaker": "S3", "text": "Hey bestie, Stanford gossip time." },
+      { "t": 34.0, "speaker": "S2", "text": "Not now, I feel kinda dizzy." },
+      { "t": 12.0, "speaker": "S1", "text": "I’ll give you oxycodone 5 mg by mouth now." }
+    ]
+  }
