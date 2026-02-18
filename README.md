@@ -210,7 +210,7 @@ Guardian Bed addresses three major healthcare problems:
 ## Team
 
 * **Quynh Anh Nguyen** — AI, ML, Quantum Security
-* **Aditya** — Hardware & Sensor Systems
+* **Aditya Garg** — Hardware & Sensor Systems
 * **Jay** — Backend, Frontend, Prioritization Systems
 
 ---
